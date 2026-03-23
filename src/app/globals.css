@@ -1,26 +1,165 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
+
+  /* Global palette — primary (rojo brand) */
+  --color-primary-50: #FEF2F2;
+  --color-primary-100: #FDDCDC;
+  --color-primary-200: #F9B4B3;
+  --color-primary-300: #F38584;
+  --color-primary-400: #EC5453;
+  --color-primary-500: #E52522;
+  --color-primary-600: #C91F1C;
+  --color-primary-700: #A71916;
+  --color-primary-800: #841311;
+  --color-primary-900: #600E0C;
+
+  /* Global palette — secondary (amarillo brand) */
+  --color-secondary-50: #FFFEF0;
+  --color-secondary-100: #FEFCE8;
+  --color-secondary-200: #FEF6B2;
+  --color-secondary-300: #FEF08A;
+  --color-secondary-400: #FEF001;
+  --color-secondary-500: #FEEB01;
+  --color-secondary-600: #E0D001;
+  --color-secondary-700: #B8A801;
+  --color-secondary-800: #8A7E01;
+  --color-secondary-900: #5C5401;
+
+  /* Global palette — neutral */
+  --color-neutral-50: #F8FAFC;
+  --color-neutral-100: #F1F5F9;
+  --color-neutral-200: #E2E8F0;
+  --color-neutral-300: #CBD5E1;
+  --color-neutral-400: #94A3B8;
+  --color-neutral-500: #6B7B8D;
+  --color-neutral-600: #55616F;
+  --color-neutral-700: #3F4750;
+  --color-neutral-800: #2A2F35;
+  --color-neutral-900: #1A1D21;
+  --color-neutral-950: #0F1114;
+
+  /* Global palette — feedback */
+  --color-success-50: #F0FDF4;
+  --color-success-500: #16A34A;
+  --color-success-600: #15803D;
+  --color-success-700: #166534;
+
+  --color-error-50: #FEF2F2;
+  --color-error-500: #DC2626;
+
+  /* Semantic — surfaces */
+  --color-surface-background: var(--color-neutral-50);
+  --color-surface-card: #FFFFFF;
+  --color-surface-header: var(--color-neutral-950);
+  --color-surface-promo: var(--color-secondary-500);
+  --color-surface-search: var(--color-neutral-100);
+  --color-surface-cart: #FFFFFF;
+
+  /* Semantic — foreground (text) */
+  --color-foreground: var(--color-neutral-900);
+  --color-foreground-secondary: var(--color-neutral-500);
+  --color-foreground-tertiary: var(--color-neutral-400);
+  --color-foreground-inverse: #FFFFFF;
+  --color-foreground-promo: var(--color-neutral-950);
+  --color-foreground-price: var(--color-neutral-900);
+  --color-foreground-brand: var(--color-primary-500);
+
+  /* Semantic — borders */
+  --color-border: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+  --color-border-focus: var(--color-primary-500);
+
+  /* Radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 9999px;
+
+  /* Letter spacing */
+  --tracking-tight: -0.005em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px 0 rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 -4px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility text-heading-xl {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility text-heading-lg {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
+@utility text-heading-md {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
+@utility text-heading-sm {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0em;
+}
+
+@utility text-body-lg {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0em;
+}
+
+@utility text-body-base {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0em;
+}
+
+@utility text-body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0em;
+}
+
+@utility text-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+}
+
+@utility text-caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0em;
+}
+
+@utility text-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0em;
+}
+
+@utility text-promo {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
 }
