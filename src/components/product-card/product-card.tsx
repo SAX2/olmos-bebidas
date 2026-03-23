@@ -68,7 +68,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 px-4 pb-4">
+      <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
         <h3 className="text-heading-sm font-semibold text-foreground line-clamp-2 min-h-[2lh] pt-4">
           {product.nombre}
         </h3>
@@ -94,7 +94,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           type="button"
           disabled={isOutOfStock}
           onClick={() => onAddToCart?.(product)}
-          className={`w-full h-10 rounded-md text-label transition-colors duration-150${
+          className={`mt-auto w-full h-10 rounded-md text-label transition-colors duration-150${
             isOutOfStock
               ? " bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed"
               : " bg-primary-500 text-foreground-inverse hover:bg-primary-600 active:bg-primary-700"
