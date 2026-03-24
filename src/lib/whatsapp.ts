@@ -1,24 +1,32 @@
 import type { Product } from "@/types/product";
-import { formatPrice, getEffectivePrice } from "@/lib/format";
+import { formatPrice, getEffectivePrice, getDiscountInfo } from "@/lib/format";
 
 export function formatWhatsAppMessage(
   cart: Map<string, number>,
   products: Product[],
 ): string {
   const productMap = new Map(products.map((p) => [p.nombre, p]));
-  const lines: string[] = ["Hola! Quiero hacer el siguiente pedido:"];
+  const lines: string[] = ["Hola! Quiero hacer el siguiente pedido:", ""];
   let total = 0;
+  let totalUnits = 0;
 
   for (const [name, qty] of cart) {
     const product = productMap.get(name);
     if (!product) continue;
-    const price = getEffectivePrice(product);
-    const subtotal = price * qty;
+
+    const unitPrice = getEffectivePrice(product);
+    const subtotal = unitPrice * qty;
     total += subtotal;
-    lines.push(`${qty}x ${name} - ${formatPrice(subtotal)}`);
+    totalUnits += qty;
+
+    const discountInfo = getDiscountInfo(product);
+    const discountBadge = discountInfo ? ` (${discountInfo.badgeText})` : "";
+    const unitPricePart = qty > 1 ? ` — ${formatPrice(unitPrice)} c/u` : "";
+
+    lines.push(`• ${qty}x ${name}${discountBadge}${unitPricePart} — ${formatPrice(subtotal)}`);
   }
 
-  lines.push("", `Total: ${formatPrice(total)}`);
+  lines.push("", `Total (${totalUnits} ${totalUnits === 1 ? "unidad" : "unidades"}): ${formatPrice(total)}`);
   return lines.join("\n");
 }
 
