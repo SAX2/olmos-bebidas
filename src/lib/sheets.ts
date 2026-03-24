@@ -34,7 +34,7 @@ export async function getProducts(): Promise<Product[]> {
         precio: Number(row[1]) || 0,
         disponibilidad: String(row[2] ?? "").toLowerCase() === "si",
         imagen: String(row[3] ?? ""),
-        descripcion: String(row[4] ?? ""),
+        categoria: String(row[4] ?? ""),
         cantidadMaxima: Number(row[5]) || 10,
         descuento: Number(row[6]) || undefined,
         descuentoTipo:

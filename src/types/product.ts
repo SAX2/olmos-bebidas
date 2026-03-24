@@ -5,7 +5,7 @@ export interface Product {
   precio: number;
   disponibilidad: boolean;
   imagen: string;
-  descripcion: string;
+  categoria: string;
   cantidadMaxima: number;
   descuento?: number;
   descuentoTipo?: DiscountType;

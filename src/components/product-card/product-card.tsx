@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
+import ImagePlaceholder from "@/components/product-card/image-placeholder";
 import type { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
+  priority?: boolean;
 }
 
 function formatPrice(value: number): string {
@@ -34,26 +37,32 @@ function getDiscountInfo(product: Product) {
   return { finalPrice, badgeText };
 }
 
-const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
+const ProductCard = ({ product, onAddToCart, priority }: ProductCardProps) => {
+  const [imageError, setImageError] = useState(false);
   const isOutOfStock = !product.disponibilidad;
   const discount = getDiscountInfo(product);
+  const showPlaceholder = !product.imagen || imageError;
 
   return (
     <article
-      className={`flex flex-col bg-surface-card border border-border shadow-sm transition-shadow duration-200 overflow-hidden${
+      className={`cv-auto flex flex-col bg-surface-card border border-border shadow-sm transition-shadow duration-200 overflow-hidden${
         isOutOfStock ? " opacity-50" : " hover:shadow-md"
       }`}
     >
       <div className="relative aspect-square bg-neutral-100">
-        {product.imagen ? (
+        {showPlaceholder ? (
+          <ImagePlaceholder />
+        ) : (
           <Image
             src={product.imagen}
             alt={product.nombre}
             fill
             className="object-contain"
             sizes="(max-width: 768px) 50vw, 25vw"
+            priority={priority}
+            onError={() => setImageError(true)}
           />
-        ) : null}
+        )}
 
         {discount ? (
           <span className="absolute top-2 right-2 bg-surface-promo text-foreground-promo text-promo font-bold rounded-full px-2 py-1">
@@ -62,20 +71,22 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         ) : null}
 
         {isOutOfStock ? (
-          <span className="absolute top-2 right-2 bg-error-500 text-foreground-inverse text-caption rounded-full px-2 py-1">
+          <span className="absolute top-2 right-2 bg-error-500 text-foreground-inverse text-promo rounded-full px-2 py-1">
             Sin stock
           </span>
         ) : null}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
-        <h3 className="text-heading-sm font-semibold text-foreground line-clamp-2 min-h-[2lh] pt-4">
-          {product.nombre}
-        </h3>
+        <div className="min-h-[3.125rem] pt-4">
+          <h3 className="text-heading-sm font-semibold text-foreground line-clamp-2">
+            {product.nombre}
+          </h3>
+        </div>
 
-        {product.descripcion ? (
+        {product.categoria ? (
           <p className="text-body-sm text-foreground-secondary">
-            {product.descripcion}
+            {product.categoria}
           </p>
         ) : null}
 

@@ -163,3 +163,8 @@
   line-height: 1.25;
   letter-spacing: 0.025em;
 }
+
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
