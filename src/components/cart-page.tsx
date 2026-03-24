@@ -88,7 +88,7 @@ export default function CartPage({ products }: CartPageProps) {
       </header>
 
       <div className="grid md:grid-cols-[1fr_380px] gap-8 items-start">
-        <div className="min-w-0 mb-24 md:mb-0">
+        <div className="min-w-0 mb-36 md:mb-0">
           <ul className="divide-y divide-border">
             {cartItems.map(({ product, quantity }) => {
               const unitPrice = getEffectivePrice(product);
@@ -174,6 +174,9 @@ export default function CartPage({ products }: CartPageProps) {
             <IconBrandWhatsapp size={20} aria-hidden="true" />
             Enviar pedido
           </button>
+          <p className="text-body-sm text-foreground-secondary text-center mt-3">
+            El envio se coordina via WhatsApp
+          </p>
         </div>
       </div>
     </div>

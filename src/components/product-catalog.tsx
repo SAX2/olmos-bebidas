@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, useMemo, useRef, useCallback, useEffect, startTransition } from "react";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import ProductCard from "@/components/product-card/product-card";
 import List from "@/components/list/list";
 import { useCart } from "@/context/cart-context";
 import type { Product } from "@/types/product";
+
+function normalize(text: string): string {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
 const ALL_CATEGORY = "Todos";
 const PROMOS_CATEGORY = "Promociones";
@@ -18,6 +23,7 @@ interface ProductCatalogProps {
 export default function ProductCatalog({ products, categories }: ProductCatalogProps) {
   const { addItem, removeItem, getQuantity } = useCart();
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORY);
+  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const scrollRef = useRef<HTMLElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -26,18 +32,29 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
 
   const handleCategoryChange = useCallback((category: string) => {
     setSelectedCategory(category);
+    setSearchQuery("");
     setVisibleCount(PAGE_SIZE);
   }, []);
 
-  const filteredProducts = useMemo(
-    () =>
-      selectedCategory === ALL_CATEGORY
-        ? products
-        : selectedCategory === PROMOS_CATEGORY
-          ? products.filter((p) => p.descuento && p.descuento > 0)
-          : products.filter((p) => p.categoria === selectedCategory),
-    [products, selectedCategory],
-  );
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    startTransition(() => {
+      setSelectedCategory(ALL_CATEGORY);
+      setVisibleCount(PAGE_SIZE);
+    });
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    const query = normalize(searchQuery.trim());
+    if (query) {
+      return products.filter((p) => normalize(p.nombre).includes(query));
+    }
+    if (selectedCategory === ALL_CATEGORY) return products;
+    if (selectedCategory === PROMOS_CATEGORY) {
+      return products.filter((p) => p.descuento && p.descuento > 0);
+    }
+    return products.filter((p) => p.categoria === selectedCategory);
+  }, [products, selectedCategory, searchQuery]);
 
   const visibleProducts = useMemo(
     () => filteredProducts.slice(0, visibleCount),
@@ -79,6 +96,31 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
 
   return (
     <>
+      <div className="relative mb-4">
+        <IconSearch
+          size={20}
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground-tertiary pointer-events-none"
+          aria-hidden="true"
+        />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Buscar productos..."
+          className="w-full rounded-full bg-neutral-100 py-2.5 pl-10 pr-10 text-body-base text-foreground-primary placeholder:text-foreground-tertiary outline-none transition-colors duration-150 focus:bg-surface-background focus:ring-2 focus:ring-primary-500 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => handleSearchChange("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-neutral-300 text-foreground-secondary hover:bg-neutral-400 transition-all duration-150 ease-out animate-[search-clear-in_150ms_ease-out]"
+            aria-label="Limpiar búsqueda"
+          >
+            <IconX size={14} strokeWidth={2.5} />
+          </button>
+        )}
+      </div>
+
       <div className="relative">
         <nav
           ref={scrollRef}
@@ -130,18 +172,24 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
         />
       </div>
 
-      <List>
-        {visibleProducts.map((product, index) => (
-          <ProductCard
-            key={product.nombre}
-            product={product}
-            quantity={getQuantity(product.nombre)}
-            onAdd={() => addItem(product.nombre, product.cantidadMaxima)}
-            onRemove={() => removeItem(product.nombre)}
-            priority={index < 8}
-          />
-        ))}
-      </List>
+      {filteredProducts.length === 0 ? (
+        <p className="py-12 text-center text-body-base text-foreground-tertiary">
+          No se encontraron productos
+        </p>
+      ) : (
+        <List>
+          {visibleProducts.map((product, index) => (
+            <ProductCard
+              key={product.nombre}
+              product={product}
+              quantity={getQuantity(product.nombre)}
+              onAdd={() => addItem(product.nombre, product.cantidadMaxima)}
+              onRemove={() => removeItem(product.nombre)}
+              priority={index < 8}
+            />
+          ))}
+        </List>
+      )}
 
       {visibleCount < filteredProducts.length && (
         <div ref={sentinelRef} className="h-1" aria-hidden="true" />
