@@ -69,13 +69,13 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
         </nav>
 
         <div
-          className={`pointer-events-none absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-surface-background to-transparent transition-opacity duration-200${
+          className={`pointer-events-none absolute left-0 top-0 bottom-4 w-16 bg-linear-to-r from-surface-background to-transparent transition-opacity duration-200${
             showLeftFade ? " opacity-100" : " opacity-0"
           }`}
           aria-hidden="true"
         />
         <div
-          className={`pointer-events-none absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-surface-background to-transparent transition-opacity duration-200${
+          className={`pointer-events-none absolute right-0 top-0 bottom-4 w-16 bg-linear-to-l from-surface-background to-transparent transition-opacity duration-200${
             showRightFade ? " opacity-100" : " opacity-0"
           }`}
           aria-hidden="true"
