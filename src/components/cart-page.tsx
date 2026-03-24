@@ -54,7 +54,7 @@ export default function CartPage({ products }: CartPageProps) {
             className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100 transition-colors duration-150"
             aria-label="Volver al catalogo"
           >
-            <IconChevronLeft size={24} aria-hidden="true" />
+            <IconChevronLeft size={20} aria-hidden="true" />
           </Link>
           <h1 className="text-heading-md text-foreground">Carrito</h1>
         </header>
@@ -82,13 +82,13 @@ export default function CartPage({ products }: CartPageProps) {
           className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100 transition-colors duration-150"
           aria-label="Volver al catalogo"
         >
-          <IconChevronLeft size={24} aria-hidden="true" />
+          <IconChevronLeft size={20} aria-hidden="true" />
         </Link>
         <h1 className="text-heading-md text-foreground">Carrito</h1>
       </header>
 
       <div className="grid md:grid-cols-[1fr_380px] gap-8 items-start">
-        <div className="min-w-0">
+        <div className="min-w-0 mb-24 md:mb-0">
           <ul className="divide-y divide-border">
             {cartItems.map(({ product, quantity }) => {
               const unitPrice = getEffectivePrice(product);
@@ -107,7 +107,7 @@ export default function CartPage({ products }: CartPageProps) {
                           sizes="48px"
                         />
                       ) : (
-                        <ImagePlaceholder />
+                        <ImagePlaceholder size={24} />
                       )}
                     </div>
                     <h3 className="text-heading-sm text-foreground truncate flex-1 min-w-0">
@@ -148,10 +148,11 @@ export default function CartPage({ products }: CartPageProps) {
                     <button
                       type="button"
                       onClick={() => deleteItem(product.nombre)}
-                      className="flex items-center justify-center w-10 h-10 shrink-0 rounded-md text-foreground-secondary hover:text-error-500 hover:bg-error-500/10 transition-colors duration-150"
+                      className="flex items-center justify-center gap-1.5 shrink-0 rounded-md text-foreground-secondary hover:text-error-500 hover:bg-error-500/10 transition-colors duration-150 h-10 px-2 md:w-10 md:px-0"
                       aria-label={`Eliminar ${product.nombre}`}
                     >
-                      <IconTrash size={16} aria-hidden="true" />
+                      <IconTrash size={16} aria-hidden="true" className="hidden md:block" />
+                      <span className="text-body-sm md:hidden">Eliminar</span>
                     </button>
                   </div>
                 </li>

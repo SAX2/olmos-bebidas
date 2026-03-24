@@ -1,8 +1,8 @@
 import { IconPhotoOff } from "@tabler/icons-react";
 
-const ImagePlaceholder = () => (
+const ImagePlaceholder = ({ size = 48 }: { size?: number }) => (
   <div className="flex items-center justify-center w-full h-full">
-    <IconPhotoOff size={48} stroke={1.5} className="text-neutral-300" />
+    <IconPhotoOff size={size} stroke={1.5} className="text-neutral-300" />
   </div>
 );
 
