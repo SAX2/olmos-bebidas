@@ -160,7 +160,7 @@ export default function CartPage({ products }: CartPageProps) {
           </ul>
         </div>
 
-        <div className="rounded-lg border border-border bg-surface-card p-6 shadow-sm sticky top-8">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface-card px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,0.08)] md:relative md:bottom-auto md:left-auto md:right-auto md:z-auto md:sticky md:top-8 md:rounded-lg md:border md:border-border md:shadow-sm md:p-6">
           <div className="flex items-center justify-between mb-4">
             <span className="text-body-lg text-foreground-secondary">Subtotal</span>
             <span className="text-price text-foreground-price tabular-nums">{formatPrice(totalPrice)}</span>
