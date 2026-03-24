@@ -1,15 +1,16 @@
 import React from "react";
 import Header from "@/components/header/header";
 import PromoHeader from "@/components/header/promo-header";
+import { CartProvider } from "@/context/cart-context";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      <Header />
-      <PromoHeader />
-      {children}
-    </div>
+    <CartProvider>
+      <div className="min-h-dvh flex flex-col">
+        <Header />
+        <PromoHeader />
+        {children}
+      </div>
+    </CartProvider>
   );
-};
-
-export default layout;
+}

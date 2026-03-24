@@ -1,4 +1,5 @@
 import ProductCatalog from "@/components/product-catalog";
+import CartBar from "@/components/cart-bar";
 import { getProducts } from "@/lib/sheets";
 
 export const revalidate = 300;
@@ -15,8 +16,9 @@ export default async function Home() {
   const categories = [...new Set(products.map((p) => p.categoria).filter(Boolean))];
 
   return (
-    <div className="container mx-auto pt-8 pb-4 px-6">
+    <div className="container mx-auto pt-8 pb-24 px-6">
       <ProductCatalog products={sortedProducts} categories={categories} />
+      <CartBar products={sortedProducts} />
     </div>
   );
 }
