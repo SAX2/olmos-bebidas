@@ -1,5 +1,4 @@
-"use server"
-
+import { unstable_cache } from "next/cache";
 import { google } from "googleapis";
 import type { Product } from "@/types/product";
 
@@ -11,7 +10,7 @@ const auth = new google.auth.JWT({
 
 const sheets = google.sheets({ version: "v4", auth });
 
-export async function getProducts(): Promise<Product[]> {
+async function fetchProducts(): Promise<Product[]> {
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
     return [];
   }
@@ -19,15 +18,15 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: process.env.GOOGLE_SHEET_RANGE ?? "Hoja1",
+      range: process.env.GOOGLE_SHEET_RANGE ?? "Productos",
       valueRenderOption: "UNFORMATTED_VALUE",
     });
 
     const rows = response.data.values;
-    if (!rows || rows.length <= 1) return [];
+    if (!rows || rows.length <= 2) return [];
 
     return rows
-      .slice(1)
+      .slice(2)
       .filter((row) => row.length >= 3)
       .map((row) => ({
         nombre: String(row[0] ?? ""),
@@ -36,13 +35,13 @@ export async function getProducts(): Promise<Product[]> {
         imagen: String(row[3] ?? ""),
         categoria: String(row[4] ?? ""),
         cantidadMaxima: Number(row[5]) || 10,
-        descuento: Number(row[6]) || undefined,
         descuentoTipo:
-          String(row[7] ?? "").toLowerCase() === "monto"
+          String(row[6] ?? "").toLowerCase() === "monto"
             ? ("monto" as const)
-            : Number(row[6]) > 0
+            : Number(row[7]) > 0
               ? ("porcentaje" as const)
               : undefined,
+        descuento: Number(row[7]) || undefined,
       }))
       .filter((p) => p.nombre && p.precio > 0);
   } catch (error) {
@@ -50,3 +49,7 @@ export async function getProducts(): Promise<Product[]> {
     return [];
   }
 }
+
+export const getProducts = unstable_cache(fetchProducts, ["products"], {
+  revalidate: 300,
+});

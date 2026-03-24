@@ -20,14 +20,14 @@ Set in `.env.local` (never commit):
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL` — Google service account email
 - `GOOGLE_PRIVATE_KEY` — PEM private key (newlines escaped as `\n`)
 - `GOOGLE_SHEET_ID` — spreadsheet ID
-- `GOOGLE_SHEET_RANGE` — sheet range (defaults to `"Hoja1"`)
+- `GOOGLE_SHEET_RANGE` — sheet range (defaults to `"Productos"`)
 - `NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER` — store's WhatsApp number (used client-side)
 
 ## Architecture
 
 **Data flow:** Server Component (`page.tsx`) calls `getProducts()` which authenticates via Google JWT and reads the spreadsheet. The page passes the `Product[]` array to `ProductGrid` (client component) which manages cart state and renders the UI.
 
-**Google Sheets column mapping** (in `src/lib/sheets.ts`): nombre | precio | disponibilidad ("si"/"no") | imagen (URL) | descripcion | cantidadMaxima. Only rows with `disponibilidad === "si"`, a non-empty name, and price > 0 are returned.
+**Google Sheets column mapping** (in `src/lib/sheets.ts`): Producto | Precio | Disponibilidad ("si"/"no") | imagen (URL) | categoria | Stock | Tipo Descuento ("porcentaje"/"monto") | Descuento. Data starts at row 3 (row 1 = headers, row 2 = subheaders). Only rows with a non-empty name and price > 0 are returned.
 
 **Cart & ordering:** `ProductGrid` holds a `Map<string, number>` (product name -> quantity) in React state. `CartSummary` appears as a fixed bottom bar when items are in the cart. Clicking "send order" opens a `wa.me` link with the order formatted as a WhatsApp message (`src/lib/whatsapp.ts`).
 

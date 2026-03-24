@@ -1,21 +1,22 @@
-import List from "@/components/list/list";
-import ProductCard from "@/components/product-card/product-card";
-import { testProducts } from "@/data/test-products";
+import ProductCatalog from "@/components/product-catalog";
+import { getProducts } from "@/lib/sheets";
 
-const sortedProducts = [...testProducts].sort((a, b) => {
-  const aHasDiscount = a.descuento && a.descuento > 0 ? 1 : 0;
-  const bHasDiscount = b.descuento && b.descuento > 0 ? 1 : 0;
-  return bHasDiscount - aHasDiscount;
-});
+export const revalidate = 300;
 
-export default function Home() {
+export default async function Home() {
+  const products = await getProducts();
+
+  const sortedProducts = [...products].sort((a, b) => {
+    const aHasDiscount = a.descuento && a.descuento > 0 ? 1 : 0;
+    const bHasDiscount = b.descuento && b.descuento > 0 ? 1 : 0;
+    return bHasDiscount - aHasDiscount;
+  });
+
+  const categories = [...new Set(products.map((p) => p.categoria).filter(Boolean))];
+
   return (
-    <div className="container mx-auto py-4 px-6">
-      <List>
-        {sortedProducts.map((product, index) => (
-          <ProductCard key={product.nombre} product={product} priority={index < 8} />
-        ))}
-      </List>
+    <div className="container mx-auto pt-8 pb-4 px-6">
+      <ProductCatalog products={sortedProducts} categories={categories} />
     </div>
   );
 }
