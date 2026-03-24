@@ -1,47 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import Image from "next/image";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import ImagePlaceholder from "@/components/product-card/image-placeholder";
+import { formatPrice, getDiscountInfo } from "@/lib/format";
 import type { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void;
+  quantity: number;
+  onAdd?: () => void;
+  onRemove?: () => void;
   priority?: boolean;
 }
 
-function formatPrice(value: number): string {
-  return value.toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-}
-
-function getDiscountInfo(product: Product) {
-  if (!product.descuento || product.descuento <= 0) return null;
-
-  const isPercent = product.descuentoTipo !== "monto";
-  const finalPrice = isPercent
-    ? Math.round(product.precio * (1 - product.descuento / 100))
-    : product.precio - product.descuento;
-
-  if (finalPrice >= product.precio || finalPrice <= 0) return null;
-
-  const badgeText = isPercent
-    ? `${product.descuento}% OFF`
-    : `-${formatPrice(product.descuento)}`;
-
-  return { finalPrice, badgeText };
-}
-
-const ProductCard = ({ product, onAddToCart, priority }: ProductCardProps) => {
+const ProductCard = memo(function ProductCard({
+  product,
+  quantity,
+  onAdd,
+  onRemove,
+  priority,
+}: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const isOutOfStock = !product.disponibilidad;
   const discount = getDiscountInfo(product);
   const showPlaceholder = !product.imagen || imageError;
+  const atMax = quantity >= product.cantidadMaxima;
 
   return (
     <article
@@ -58,7 +43,7 @@ const ProductCard = ({ product, onAddToCart, priority }: ProductCardProps) => {
             alt={product.nombre}
             fill
             className="object-contain"
-            sizes="(max-width: 768px) 50vw, 25vw"
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 25vw"
             priority={priority}
             onError={() => setImageError(true)}
           />
@@ -101,21 +86,63 @@ const ProductCard = ({ product, onAddToCart, priority }: ProductCardProps) => {
           </span>
         </div>
 
-        <button
-          type="button"
-          disabled={isOutOfStock}
-          onClick={() => onAddToCart?.(product)}
-          className={`mt-auto w-full h-10 rounded-md text-label transition-colors duration-150${
-            isOutOfStock
-              ? " bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed"
-              : " bg-primary-500 text-foreground-inverse hover:bg-primary-600 active:bg-primary-700"
-          }`}
-        >
-          Agregar al carrito
-        </button>
+        <div className="mt-auto relative h-10">
+          <button
+            type="button"
+            disabled={isOutOfStock}
+            onClick={onAdd}
+            aria-hidden={quantity > 0}
+            tabIndex={quantity > 0 ? -1 : undefined}
+            className={`absolute inset-0 w-full h-full rounded-md text-label will-change-[opacity,transform] transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none${
+              isOutOfStock
+                ? " bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed"
+                : " bg-primary-500 text-foreground-inverse hover:bg-primary-600 active:bg-primary-700 active:scale-[0.97]"
+            }${
+              quantity > 0
+                ? " opacity-0 scale-95 pointer-events-none"
+                : " opacity-100 scale-100"
+            }`}
+          >
+            Agregar al carrito
+          </button>
+
+          <div
+            aria-hidden={quantity === 0}
+            className={`absolute inset-0 flex items-center h-full rounded-md border border-primary-500 bg-surface-card overflow-hidden will-change-[opacity,transform] transition-[opacity,transform] duration-[180ms] ease-out motion-reduce:transition-none${
+              quantity > 0
+                ? " opacity-100 scale-100"
+                : " opacity-0 scale-95 pointer-events-none"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={onRemove}
+              tabIndex={quantity === 0 ? -1 : undefined}
+              className="flex items-center justify-center w-10 h-full text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9] will-change-transform transition-[transform,background-color] duration-100 ease-out motion-reduce:transition-none text-lg font-semibold"
+            >
+              <IconMinus size={18} />
+            </button>
+            <span className="flex-1 text-center text-label font-semibold text-foreground">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              onClick={onAdd}
+              disabled={atMax}
+              tabIndex={quantity === 0 ? -1 : undefined}
+              className={`flex items-center justify-center w-10 h-full will-change-transform transition-[transform,background-color] duration-100 ease-out motion-reduce:transition-none text-lg font-semibold${
+                atMax
+                  ? " text-neutral-400 cursor-not-allowed"
+                  : " text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9]"
+              }`}
+            >
+              <IconPlus size={18} />
+            </button>
+          </div>
+        </div>
       </div>
     </article>
   );
-};
+});
 
 export default ProductCard;
