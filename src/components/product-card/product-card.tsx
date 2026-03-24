@@ -64,9 +64,9 @@ const ProductCard = memo(function ProductCard({
 
       <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
         <div className="min-h-[3.125rem] pt-4">
-          <h3 className="text-heading-sm font-semibold text-foreground line-clamp-2">
+          <h2 className="text-heading-sm font-semibold text-foreground line-clamp-2">
             {product.nombre}
-          </h3>
+          </h2>
         </div>
 
         {product.categoria ? (
