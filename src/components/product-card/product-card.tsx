@@ -50,8 +50,8 @@ const ProductCard = memo(function ProductCard({
         )}
 
         {product.destacado && (
-          <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-neutral-900 text-foreground-inverse text-promo font-bold rounded-full px-2 py-1">
-            <IconStarFilled size={14} className="text-secondary-400" />
+          <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-primary-100 text-primary-700 border border-primary-200 shadow-sm text-promo font-bold rounded-full px-2 py-1">
+            <IconStarFilled size={14} />
             Destacado
           </span>
         )}
@@ -70,7 +70,7 @@ const ProductCard = memo(function ProductCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
-        <div className="min-h-[3.125rem] pt-4">
+        <div className="min-h-12.5 pt-4">
           <h2 className="text-heading-sm font-semibold text-foreground line-clamp-2">
             {product.nombre}
           </h2>
