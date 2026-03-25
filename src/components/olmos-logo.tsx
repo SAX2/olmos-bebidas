@@ -6,13 +6,13 @@ interface OlmosLogoProps {
   className?: string;
 }
 
-const OlmosLogo = ({ width = 129, height = 91, className }: OlmosLogoProps) => (
+const OlmosLogo = ({ width, height, className }: OlmosLogoProps) => (
   <svg
-    width={width}
-    height={height}
     viewBox="0 0 129 91"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    width={width}
+    height={height}
     className={className}
   >
     <g clipPath="url(#clip0_1_298)">

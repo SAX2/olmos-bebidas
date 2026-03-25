@@ -89,6 +89,12 @@
   /* Animations */
   --animate-cart-bar-enter: cart-bar-enter 300ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-thumb-pop-in: thumb-pop-in 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  --animate-marquee: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @utility text-heading-xl {
