@@ -9,4 +9,5 @@ export interface Product {
   cantidadMaxima: number;
   descuento?: number;
   descuentoTipo?: DiscountType;
+  destacado?: boolean;
 }

@@ -2,7 +2,7 @@
 
 import { memo, useState } from "react";
 import Image from "next/image";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconMinus, IconPlus, IconStarFilled } from "@tabler/icons-react";
 import ImagePlaceholder from "@/components/product-card/image-placeholder";
 import { formatPrice, getDiscountInfo } from "@/lib/format";
 import type { Product } from "@/types/product";
@@ -47,6 +47,13 @@ const ProductCard = memo(function ProductCard({
             priority={priority}
             onError={() => setImageError(true)}
           />
+        )}
+
+        {product.destacado && (
+          <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-primary-500 text-foreground-inverse text-promo font-bold rounded-full px-2 py-1">
+            <IconStarFilled size={14} />
+            Destacado
+          </span>
         )}
 
         {discount ? (
