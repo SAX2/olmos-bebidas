@@ -53,3 +53,27 @@ async function fetchProducts(): Promise<Product[]> {
 export const getProducts = unstable_cache(fetchProducts, ["products"], {
   revalidate: 300,
 });
+
+async function fetchPromoDestacada(): Promise<string | null> {
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+    return null;
+  }
+
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      range: "Promo destacada!A2",
+      valueRenderOption: "UNFORMATTED_VALUE",
+    });
+
+    const value = response.data.values?.[0]?.[0];
+    return value ? String(value) : null;
+  } catch (error) {
+    console.error("Error fetching promo destacada from Google Sheets:", error);
+    return null;
+  }
+}
+
+export const getPromoDestacada = unstable_cache(fetchPromoDestacada, ["promo-destacada"], {
+  revalidate: 300,
+});
