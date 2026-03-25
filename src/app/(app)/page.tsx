@@ -10,11 +10,7 @@ export default async function Home() {
   const sortedProducts = [...products].sort((a, b) => {
     const aFeatured = a.destacado ? 1 : 0;
     const bFeatured = b.destacado ? 1 : 0;
-    if (bFeatured !== aFeatured) return bFeatured - aFeatured;
-
-    const aHasDiscount = a.descuento && a.descuento > 0 ? 1 : 0;
-    const bHasDiscount = b.descuento && b.descuento > 0 ? 1 : 0;
-    return bHasDiscount - aHasDiscount;
+    return bFeatured - aFeatured;
   });
 
   const categories = [...new Set(products.map((p) => p.categoria).filter(Boolean))];
