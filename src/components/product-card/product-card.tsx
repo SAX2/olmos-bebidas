@@ -50,8 +50,8 @@ const ProductCard = memo(function ProductCard({
         )}
 
         {product.destacado && (
-          <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-primary-500 text-foreground-inverse text-promo font-bold rounded-full px-2 py-1">
-            <IconStarFilled size={14} />
+          <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-neutral-900 text-foreground-inverse text-promo font-bold rounded-full px-2 py-1">
+            <IconStarFilled size={14} className="text-secondary-400" />
             Destacado
           </span>
         )}
