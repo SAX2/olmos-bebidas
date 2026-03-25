@@ -1,6 +1,6 @@
 import ProductCatalog from "@/components/product-catalog";
 import CartBar from "@/components/cart-bar";
-import { getProducts } from "@/lib/sheets";
+import { getProducts, getCategories } from "@/lib/sheets";
 
 export const revalidate = 300;
 
@@ -13,7 +13,12 @@ export default async function Home() {
     return bFeatured - aFeatured;
   });
 
-  const categories = [...new Set(products.map((p) => p.categoria).filter(Boolean))];
+  const productCategories = new Set(products.map((p) => p.categoria).filter(Boolean));
+  const sheetCategories = await getCategories();
+
+  const orderedCategories = sheetCategories.filter((c) => productCategories.has(c));
+  const unlisted = [...productCategories].filter((c) => !orderedCategories.includes(c));
+  const categories = [...orderedCategories, ...unlisted];
 
   return (
     <div className="container mx-auto pt-8 pb-24 px-6">

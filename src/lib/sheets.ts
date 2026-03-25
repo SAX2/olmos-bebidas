@@ -78,3 +78,29 @@ async function fetchPromoDestacada(): Promise<string | null> {
 export const getPromoDestacada = unstable_cache(fetchPromoDestacada, ["promo-destacada"], {
   revalidate: 300,
 });
+
+async function fetchCategories(): Promise<string[]> {
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+    return [];
+  }
+
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      range: "Categorias!A:A",
+      valueRenderOption: "UNFORMATTED_VALUE",
+    });
+
+    const rows = response.data.values;
+    if (!rows) return [];
+
+    return rows.map((row) => String(row[0] ?? "")).filter(Boolean);
+  } catch (error) {
+    console.error("Error fetching categories from Google Sheets:", error);
+    return [];
+  }
+}
+
+export const getCategories = unstable_cache(fetchCategories, ["categories"], {
+  revalidate: 300,
+});
