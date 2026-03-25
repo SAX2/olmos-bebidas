@@ -51,7 +51,9 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
     }
     if (selectedCategory === ALL_CATEGORY) return products;
     if (selectedCategory === PROMOS_CATEGORY) {
-      return products.filter((p) => p.descuento && p.descuento > 0);
+      return products.filter(
+        (p) => p.destacado || (p.descuento && p.descuento > 0),
+      );
     }
     return products.filter((p) => p.categoria === selectedCategory);
   }, [products, selectedCategory, searchQuery]);

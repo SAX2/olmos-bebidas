@@ -42,6 +42,7 @@ async function fetchProducts(): Promise<Product[]> {
               ? ("porcentaje" as const)
               : undefined,
         descuento: Number(row[7]) || undefined,
+        destacado: String(row[8] ?? "").toLowerCase() === "si",
       }))
       .filter((p) => p.nombre && p.precio > 0);
   } catch (error) {
