@@ -32,6 +32,13 @@ async function fetchProducts(): Promise<Product[]> {
     return Number.isFinite(n) ? Math.max(0, n) : fallback;
   };
 
+  const parseDriveImage = (value: unknown): string => {
+    const url = String(value ?? "").trim();
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    return url;
+  };
+
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -49,7 +56,7 @@ async function fetchProducts(): Promise<Product[]> {
         nombre: String(row[0] ?? "").trim(),
         precio: parseNumber(row[1]),
         disponibilidad: parseSiNo(row[2]),
-        imagen: String(row[3] ?? "").trim(),
+        imagen: parseDriveImage(row[3]),
         categoria: String(row[4] ?? "").trim(),
         cantidadMaxima: parseStock(row[5]),
         descuentoTipo:
