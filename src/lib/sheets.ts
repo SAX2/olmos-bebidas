@@ -55,7 +55,7 @@ async function fetchProducts(): Promise<Product[]> {
       .map((row) => ({
         nombre: String(row[0] ?? "").trim(),
         precio: parseNumber(row[1]),
-        disponibilidad: parseSiNo(row[2]),
+        visibilidad: parseSiNo(row[2]),
         imagen: parseDriveImage(row[3]),
         categoria: String(row[4] ?? "").trim(),
         cantidadMaxima: parseStock(row[5]),
@@ -68,7 +68,7 @@ async function fetchProducts(): Promise<Product[]> {
         descuento: Number(row[7]) || undefined,
         destacado: parseSiNo(row[8]),
       }))
-      .filter((p) => p.nombre && p.precio > 0);
+      .filter((p) => p.nombre && p.precio > 0 && p.visibilidad);
   } catch (error) {
     console.error("Error fetching products from Google Sheets:", error);
     return [];

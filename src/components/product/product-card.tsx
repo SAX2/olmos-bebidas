@@ -23,7 +23,7 @@ const ProductCard = memo(function ProductCard({
   priority,
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
-  const isOutOfStock = !product.disponibilidad;
+  const isOutOfStock = product.cantidadMaxima === 0;
   const discount = getDiscountInfo(product);
   const showPlaceholder = !product.imagen || imageError;
   const atMax = quantity >= product.cantidadMaxima;

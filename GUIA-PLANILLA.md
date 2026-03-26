@@ -12,7 +12,7 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 |---------|-----------|:-----------:|---------|
 | **Producto** | Nombre del producto | Si | `Coca-Cola 2.25L` |
 | **Precio** | Precio en pesos (acepta `$`, `.` y `,`) | Si | `2500` o `$2.500` |
-| **Disponibilidad** | `si` o `no` | Si | `si` |
+| **Visibilidad** | `si` o `no` — si pones `no`, el producto no aparece en la pagina | Si | `si` |
 | **Imagen** | Link de la imagen (ver seccion "Imagenes") | No | `https://lh3.google...` |
 | **Categoria** | Categoria del producto | No | `Gaseosas` |
 | **Stock** | Cantidad maxima que un cliente puede pedir | No | `10` (si se deja vacio, se asume 10) |
@@ -23,7 +23,8 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 ### Reglas importantes
 
 - Un producto **no aparece** en la pagina si no tiene nombre o si el precio es 0.
-- Si pones **Disponibilidad** en `no`, el producto se muestra pero no se puede agregar al carrito.
+- Si pones **Visibilidad** en `no`, el producto **no aparece** en la pagina.
+- Si pones **Stock** en `0`, el producto se muestra pero no se puede agregar al carrito (aparece como "Sin stock").
 - Los productos con **Destacado** en `si` o con **Descuento** mayor a 0 aparecen en el filtro "Promociones".
 
 ### Descuentos
@@ -113,4 +114,4 @@ Verificar que tenga nombre y que el precio sea mayor a 0.
 Verificar que el link sea correcto y que, si es de Google Drive, el archivo este compartido como publico ("Cualquier persona con el enlace").
 
 **Como saco un producto temporalmente?**
-Poner "no" en la columna Disponibilidad. El producto se muestra pero no se puede comprar. Si queres que no se muestre, borrar la fila o dejar el nombre vacio.
+Poner "no" en la columna Visibilidad. El producto desaparece de la pagina. Si queres que se muestre pero que no se pueda comprar, pone el Stock en `0`.
