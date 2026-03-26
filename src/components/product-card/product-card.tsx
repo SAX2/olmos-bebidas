@@ -115,7 +115,7 @@ const ProductCard = memo(function ProductCard({
 
           <div
             aria-hidden={quantity === 0}
-            className={`absolute inset-0 flex items-center h-full rounded-md border border-primary-500 bg-surface-card overflow-hidden will-change-[opacity,transform] transition-[opacity,transform] duration-[180ms] ease-out motion-reduce:transition-none${
+            className={`absolute inset-0 flex items-center h-full rounded-md border border-primary-500 bg-surface-card overflow-hidden will-change-[opacity,transform] transition-[opacity,transform] duration-180 ease-out motion-reduce:transition-none${
               quantity > 0
                 ? " opacity-100 scale-100"
                 : " opacity-0 scale-95 pointer-events-none"
