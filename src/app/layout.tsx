@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { Agentation } from "agentation";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -78,6 +79,7 @@ export default function RootLayout({
     <html lang="es-AR" className={`${poppins.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         {children}
+        <Analytics />
         {process.env.NODE_ENV === "development" && (
           <Agentation endpoint="http://localhost:4747" />
         )}
