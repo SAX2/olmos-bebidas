@@ -1,11 +1,14 @@
-import ProductCatalog from "@/components/product-catalog";
-import CartBar from "@/components/cart-bar";
+import ProductCatalog from "@/components/product/product-catalog";
+import CartBar from "@/components/cart/cart-bar";
 import { getProducts, getCategories } from "@/lib/sheets";
 
 export const revalidate = 300;
 
 export default async function Home() {
-  const products = await getProducts();
+  const [products, sheetCategories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ]);
 
   const sortedProducts = [...products].sort((a, b) => {
     const aFeatured = a.destacado ? 1 : 0;
@@ -14,7 +17,6 @@ export default async function Home() {
   });
 
   const productCategories = new Set(products.map((p) => p.categoria).filter(Boolean));
-  const sheetCategories = await getCategories();
 
   const orderedCategories = sheetCategories.filter((c) => productCategories.has(c));
   const unlisted = [...productCategories].filter((c) => !orderedCategories.includes(c));

@@ -3,7 +3,7 @@
 import { memo, useState } from "react";
 import Image from "next/image";
 import { IconMinus, IconPlus, IconStarFilled } from "@tabler/icons-react";
-import ImagePlaceholder from "@/components/product-card/image-placeholder";
+import ImagePlaceholder from "@/components/product/image-placeholder";
 import { formatPrice, getDiscountInfo } from "@/lib/format";
 import type { Product } from "@/types/product";
 

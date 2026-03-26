@@ -2,9 +2,9 @@
 
 import { useState, useMemo, useRef, useCallback, useEffect, startTransition } from "react";
 import { IconSearch, IconX } from "@tabler/icons-react";
-import ProductCard from "@/components/product-card/product-card";
-import List from "@/components/list/list";
-import { useCart } from "@/context/cart-context";
+import ProductCard from "@/components/product/product-card";
+import ProductList from "@/components/product/product-list";
+import { useCart } from "@/components/cart/cart-context";
 import type { Product } from "@/types/product";
 
 function normalize(text: string): string {
@@ -80,7 +80,7 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [visibleCount, filteredProducts.length]);
+  }, [filteredProducts.length]);
 
   const updateFades = useCallback(() => {
     const el = scrollRef.current;
@@ -179,7 +179,7 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
           No se encontraron productos
         </p>
       ) : (
-        <List>
+        <ProductList>
           {visibleProducts.map((product, index) => (
             <ProductCard
               key={product.nombre}
@@ -190,7 +190,7 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
               priority={index < 8}
             />
           ))}
-        </List>
+        </ProductList>
       )}
 
       {visibleCount < filteredProducts.length && (

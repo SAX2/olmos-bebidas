@@ -11,10 +11,10 @@ import {
   IconPlus,
   IconTruckDelivery,
 } from "@tabler/icons-react";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/components/cart/cart-context";
 import { formatPrice, getEffectivePrice } from "@/lib/format";
 import { formatWhatsAppMessage, getWhatsAppUrl } from "@/lib/whatsapp";
-import ImagePlaceholder from "@/components/product-card/image-placeholder";
+import ImagePlaceholder from "@/components/product/image-placeholder";
 import type { Product } from "@/types/product";
 
 interface CartPageProps {

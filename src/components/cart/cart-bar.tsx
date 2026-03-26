@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/components/cart/cart-context";
 import { formatPrice, getEffectivePrice } from "@/lib/format";
 import type { Product } from "@/types/product";
 

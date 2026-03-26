@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CartPage from "@/components/cart-page";
+import CartPage from "@/components/cart/cart-page";
 import { getProducts } from "@/lib/sheets";
 
 export const metadata: Metadata = {
