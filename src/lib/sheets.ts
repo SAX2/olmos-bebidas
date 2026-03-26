@@ -15,6 +15,23 @@ async function fetchProducts(): Promise<Product[]> {
     return [];
   }
 
+  const parseSiNo = (value: unknown): boolean =>
+    String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase() === "si";
+
+  const parseNumber = (value: unknown): number => {
+    if (typeof value === "number") return value;
+    return Number(String(value).replace(/[$.\s]/g, "").replace(",", ".")) || 0;
+  };
+
+  const parseStock = (value: unknown, fallback = 10): number => {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(0, n) : fallback;
+  };
+
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -29,20 +46,20 @@ async function fetchProducts(): Promise<Product[]> {
       .slice(2)
       .filter((row) => row.length >= 3)
       .map((row) => ({
-        nombre: String(row[0] ?? ""),
-        precio: Number(row[1]) || 0,
-        disponibilidad: String(row[2] ?? "").toLowerCase() === "si",
-        imagen: String(row[3] ?? ""),
-        categoria: String(row[4] ?? ""),
-        cantidadMaxima: Number(row[5]) || 10,
+        nombre: String(row[0] ?? "").trim(),
+        precio: parseNumber(row[1]),
+        disponibilidad: parseSiNo(row[2]),
+        imagen: String(row[3] ?? "").trim(),
+        categoria: String(row[4] ?? "").trim(),
+        cantidadMaxima: parseStock(row[5]),
         descuentoTipo:
-          String(row[6] ?? "").toLowerCase() === "monto"
+          String(row[6] ?? "").trim().toLowerCase() === "monto"
             ? ("monto" as const)
             : Number(row[7]) > 0
               ? ("porcentaje" as const)
               : undefined,
         descuento: Number(row[7]) || undefined,
-        destacado: String(row[8] ?? "").toLowerCase() === "si",
+        destacado: parseSiNo(row[8]),
       }))
       .filter((p) => p.nombre && p.precio > 0);
   } catch (error) {
