@@ -66,6 +66,7 @@ export const metadata: Metadata = {
     canonical: "https://www.olmosbebidas.com.ar",
   },
   icons: {
+    icon: "/favicon.ico",
     apple: "/icon-192.png",
   },
 };
