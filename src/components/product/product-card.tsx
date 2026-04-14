@@ -34,7 +34,7 @@ const ProductCard = memo(function ProductCard({
         isOutOfStock ? " opacity-50" : " hover:shadow-md"
       }`}
     >
-      <div className="relative aspect-square bg-neutral-100">
+      <div className="relative aspect-square bg-white">
         {showPlaceholder ? (
           <ImagePlaceholder />
         ) : (
