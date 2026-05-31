@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { google } from "googleapis";
 import type { Product } from "@/types/product";
+import { parseProductRow } from "@/lib/product-row";
 
 const auth = new google.auth.JWT({
   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -15,30 +16,6 @@ async function fetchProducts(): Promise<Product[]> {
     return [];
   }
 
-  const parseSiNo = (value: unknown): boolean =>
-    String(value ?? "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim()
-      .toLowerCase() === "si";
-
-  const parseNumber = (value: unknown): number => {
-    if (typeof value === "number") return value;
-    return Number(String(value).replace(/[$.\s]/g, "").replace(",", ".")) || 0;
-  };
-
-  const parseStock = (value: unknown, fallback = 10): number => {
-    const n = Number(value);
-    return Number.isFinite(n) ? Math.max(0, n) : fallback;
-  };
-
-  const parseDriveImage = (value: unknown): string => {
-    const url = String(value ?? "").trim();
-    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (match) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-    return url;
-  };
-
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -51,31 +28,15 @@ async function fetchProducts(): Promise<Product[]> {
 
     return rows
       .slice(2)
-      .filter((row) => row.length >= 3)
-      .map((row) => ({
-        nombre: String(row[0] ?? "").trim(),
-        precio: parseNumber(row[1]),
-        visibilidad: parseSiNo(row[2]),
-        imagen: parseDriveImage(row[3]),
-        categoria: String(row[4] ?? "").trim(),
-        cantidadMaxima: parseStock(row[5]),
-        descuentoTipo:
-          String(row[6] ?? "").trim().toLowerCase() === "monto"
-            ? ("monto" as const)
-            : Number(row[7]) > 0
-              ? ("porcentaje" as const)
-              : undefined,
-        descuento: Number(row[7]) || undefined,
-        destacado: parseSiNo(row[8]),
-      }))
-      .filter((p) => p.nombre && p.precio > 0 && p.visibilidad);
+      .map((row) => parseProductRow(row))
+      .filter((product): product is Product => product !== null);
   } catch (error) {
     console.error("Error fetching products from Google Sheets:", error);
     return [];
   }
 }
 
-export const getProducts = unstable_cache(fetchProducts, ["products"], {
+export const getProducts = unstable_cache(fetchProducts, ["products-v2"], {
   revalidate: 300,
 });
 

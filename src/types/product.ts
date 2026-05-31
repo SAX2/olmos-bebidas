@@ -1,6 +1,8 @@
 export type DiscountType = "porcentaje" | "monto";
 
 export interface Product {
+  id: string;
+  sku: string;
   nombre: string;
   precio: number;
   visibilidad: boolean;
