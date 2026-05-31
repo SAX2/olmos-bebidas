@@ -11,7 +11,8 @@ Olmos Bebidas is a beverage store catalog built with Next.js. Users browse produ
 - `npm run dev` — start dev server
 - `npm run build` — production build
 - `npm run lint` — run ESLint (flat config, `eslint.config.mjs`)
-- No test framework is configured
+- `npm run test:e2e` — run Playwright smoke tests against the local Next.js app
+- `npm run test:e2e:ui` — open the Playwright UI runner for interactive browser debugging
 
 ## Required Environment Variables
 
