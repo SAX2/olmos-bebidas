@@ -10,6 +10,7 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 
 | Columna | Que poner | Obligatorio | Ejemplo |
 |---------|-----------|:-----------:|---------|
+| **SKU** | Codigo interno unico del producto. No se muestra en la pagina | Recomendado | `GAS-COCA-225` |
 | **Producto** | Nombre del producto | Si | `Coca-Cola 2.25L` |
 | **Precio** | Precio en pesos (acepta `$`, `.` y `,`) | Si | `2500` o `$2.500` |
 | **Visibilidad** | `si` o `no` — si pones `no`, el producto no aparece en la pagina | Si | `si` |
@@ -23,6 +24,7 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 ### Reglas importantes
 
 - Un producto **no aparece** en la pagina si no tiene nombre o si el precio es 0.
+- El **SKU** se usa internamente para identificar el producto en el carrito. Conviene que sea unico y que no cambie.
 - Si pones **Visibilidad** en `no`, el producto **no aparece** en la pagina.
 - Si pones **Stock** en `0`, el producto se muestra pero no se puede agregar al carrito (aparece como "Sin stock").
 - Los productos con **Destacado** en `si` o con **Descuento** mayor a 0 aparecen en el filtro "Promociones".

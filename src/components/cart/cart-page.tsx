@@ -25,14 +25,14 @@ export default function CartPage({ products }: CartPageProps) {
   const { items, addItem, removeItem, deleteItem, totalItems } = useCart();
 
   const productMap = useMemo(
-    () => new Map(products.map((p) => [p.nombre, p])),
+    () => new Map(products.map((p) => [p.id, p])),
     [products],
   );
 
   const cartItems = useMemo(() => {
     const result: { product: Product; quantity: number }[] = [];
-    for (const [name, qty] of items) {
-      const product = productMap.get(name);
+    for (const [id, qty] of items) {
+      const product = productMap.get(id);
       if (product) result.push({ product, quantity: qty });
     }
     return result;
@@ -103,7 +103,7 @@ export default function CartPage({ products }: CartPageProps) {
 
               return (
                 <li
-                  key={product.nombre}
+                  key={product.id}
                   className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4 py-4 first:pt-0 last:pb-0"
                 >
                   <div className="flex items-center gap-3 min-w-0 md:flex-1">
@@ -134,7 +134,7 @@ export default function CartPage({ products }: CartPageProps) {
                     <div className="inline-flex items-center h-10 rounded-md border border-primary-500 bg-surface-card overflow-hidden">
                       <button
                         type="button"
-                        onClick={() => removeItem(product.nombre)}
+                        onClick={() => removeItem(product.id)}
                         className="flex items-center justify-center w-10 h-full text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9] will-change-transform transition-[transform,background-color] duration-100"
                       >
                         <IconMinus size={18} />
@@ -145,7 +145,7 @@ export default function CartPage({ products }: CartPageProps) {
                       <button
                         type="button"
                         onClick={() =>
-                          addItem(product.nombre, product.cantidadMaxima)
+                          addItem(product.id, product.cantidadMaxima)
                         }
                         disabled={atMax}
                         className={`flex items-center justify-center w-10 h-full will-change-transform transition-[transform,background-color] duration-100${
@@ -159,7 +159,7 @@ export default function CartPage({ products }: CartPageProps) {
                     </div>
                     <button
                       type="button"
-                      onClick={() => deleteItem(product.nombre)}
+                      onClick={() => deleteItem(product.id)}
                       className="flex items-center justify-center gap-1.5 shrink-0 rounded-md text-foreground-secondary hover:text-error-500 hover:bg-error-500/10 transition-colors duration-150 h-10 px-2 md:w-10 md:px-0"
                       aria-label={`Eliminar ${product.nombre}`}
                     >

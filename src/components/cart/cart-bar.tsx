@@ -18,14 +18,14 @@ export default function CartBar({ products }: CartBarProps) {
   const { items, totalItems } = useCart();
 
   const productMap = useMemo(
-    () => new Map(products.map((p) => [p.nombre, p])),
+    () => new Map(products.map((p) => [p.id, p])),
     [products],
   );
 
   const totalPrice = useMemo(() => {
     let total = 0;
-    for (const [name, qty] of items) {
-      const product = productMap.get(name);
+    for (const [id, qty] of items) {
+      const product = productMap.get(id);
       if (product) total += getEffectivePrice(product) * qty;
     }
     return total;
@@ -33,8 +33,8 @@ export default function CartBar({ products }: CartBarProps) {
 
   const previewProducts = useMemo(() => {
     const result: Product[] = [];
-    for (const [name] of items) {
-      const product = productMap.get(name);
+    for (const [id] of items) {
+      const product = productMap.get(id);
       if (product?.imagen) result.push(product);
       if (result.length >= MAX_PREVIEW) break;
     }
@@ -52,7 +52,7 @@ export default function CartBar({ products }: CartBarProps) {
               <div className="flex items-center -space-x-3">
                 {previewProducts.map((product, i) => (
                   <div
-                    key={product.nombre}
+                    key={product.id}
                     className={`relative w-12 h-12 rounded-lg border-2 border-white bg-white shadow-md overflow-hidden ${ROTATIONS[i]} will-change-[transform,opacity] animate-thumb-pop-in motion-reduce:animate-none`}
                     style={{ zIndex: MAX_PREVIEW - i, animationDelay: `${i * 50}ms` }}
                   >

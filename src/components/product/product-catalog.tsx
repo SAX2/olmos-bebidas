@@ -182,11 +182,11 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
         <ProductList>
           {visibleProducts.map((product, index) => (
             <ProductCard
-              key={product.nombre}
+              key={product.id}
               product={product}
-              quantity={getQuantity(product.nombre)}
-              onAdd={() => addItem(product.nombre, product.cantidadMaxima)}
-              onRemove={() => removeItem(product.nombre)}
+              quantity={getQuantity(product.id)}
+              onAdd={() => addItem(product.id, product.cantidadMaxima)}
+              onRemove={() => removeItem(product.id)}
               priority={index < 8}
             />
           ))}
