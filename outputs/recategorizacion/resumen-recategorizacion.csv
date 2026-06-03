@@ -1,0 +1,83 @@
+Categoria nueva,Subcategoria,Cantidad de productos
+Aperitivos y coctelería,Aperitivos,17
+Aperitivos y coctelería,Botánicos,15
+Aperitivos y coctelería,Copas y utensilios,18
+Aperitivos y coctelería,Hielo,1
+Aperitivos y coctelería,Pulpas,8
+Aperitivos y coctelería,Vermouth,8
+Cervezas,Cervezas,102
+Cervezas,Listas para tomar,11
+Combos,Combos,13
+Destilados,Coñac,1
+Destilados,Gin,33
+Destilados,Grapas,3
+Destilados,Licores,34
+Destilados,Pisco,3
+Destilados,Ron,11
+Destilados,Tequila,6
+Destilados,Vodka,42
+Destilados,Whisky,43
+Regalos y varios,Artículos para fumar,37
+Regalos y varios,Estuchería y regalos,98
+Regalos y varios,Preservativos,3
+Regalos y varios,Varios,12
+Sin alcohol,Agua saborizada,34
+Sin alcohol,Aguas,16
+Sin alcohol,Energizantes,17
+Sin alcohol,Gaseosas,40
+Sin alcohol,Jugos,12
+Snacks y almacén,Aceite de oliva,5
+Snacks y almacén,Alfajores,6
+Snacks y almacén,Chocolates,12
+Snacks y almacén,Conservas,24
+Snacks y almacén,Golosinas,8
+Snacks y almacén,Mermeladas,6
+Snacks y almacén,Snacks,46
+Vinos y espumantes,Champagne,8
+Vinos y espumantes,Espumantes,41
+Vinos y espumantes,Vinos,268
+
+Categoria original,Cantidad de productos
+Aceite de Oliva,5
+Agua Saborizada,34
+Aguas,16
+Alfajores,6
+Aperitivos,8
+Artículos para Fumar,37
+Bebidas Alcohólicas Gasificadas,11
+Botánicos,15
+Cervezas,102
+Champagne,8
+Chicles y Golosinas,8
+Chocolates,12
+Combos y Promociones,13
+Conservas,24
+Copas y Utensilios,18
+Coñac,1
+Energizantes,17
+Espumantes,42
+Estuchería y Regalos,98
+Gaseosas,40
+Gin,33
+Grapas,3
+Hielo,1
+Jugos,12
+Licor de Hierbas,13
+Licores,29
+Mermeladas,6
+Pisco,3
+Preservativos,3
+Pulpas,8
+Ron,11
+Snacks,46
+Tequila,6
+Varios,12
+Vermouth,7
+Vinos,269
+Vodka,42
+Whisky,43
+
+Productos con recategorizacion por palabra clave,11
+Filas de categorias fuente,40
+Productos con nombre procesados,1062
+Filas de productos fuente,1087

@@ -1,7 +1,12 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-sans: var(--font-poppins);
+  --font-heading: var(--font-poppins);
 
   /* Global palette — primary (rojo brand) */
   --color-primary-50: #FEF2F2;
@@ -90,6 +95,40 @@
   --animate-cart-bar-enter: cart-bar-enter 300ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-thumb-pop-in: thumb-pop-in 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
   --animate-marquee: marquee 20s linear infinite;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-background: var(--background);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @keyframes marquee {
@@ -198,5 +237,86 @@
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+:root {
+  --background: var(--color-surface-background);
+  --foreground: var(--color-foreground);
+  --card: var(--color-surface-card);
+  --card-foreground: var(--color-foreground);
+  --popover: var(--color-surface-card);
+  --popover-foreground: var(--color-foreground);
+  --primary: var(--color-primary-500);
+  --primary-foreground: var(--color-foreground-inverse);
+  --secondary: var(--color-surface-promo);
+  --secondary-foreground: var(--color-foreground-promo);
+  --muted: var(--color-neutral-100);
+  --muted-foreground: var(--color-foreground-secondary);
+  --accent: var(--color-neutral-100);
+  --accent-foreground: var(--color-foreground);
+  --destructive: var(--color-error-500);
+  --border: var(--color-neutral-200);
+  --input: var(--color-neutral-200);
+  --ring: var(--color-border-focus);
+  --chart-1: var(--color-primary-500);
+  --chart-2: var(--color-secondary-500);
+  --chart-3: var(--color-neutral-700);
+  --chart-4: var(--color-success-500);
+  --chart-5: var(--color-error-500);
+  --radius: var(--radius-md);
+  --sidebar: var(--color-surface-card);
+  --sidebar-foreground: var(--color-foreground);
+  --sidebar-primary: var(--color-primary-500);
+  --sidebar-primary-foreground: var(--color-foreground-inverse);
+  --sidebar-accent: var(--color-neutral-100);
+  --sidebar-accent-foreground: var(--color-foreground);
+  --sidebar-border: var(--color-neutral-200);
+  --sidebar-ring: var(--color-border-focus);
+}
+
+.dark {
+  --background: var(--color-neutral-950);
+  --foreground: var(--color-neutral-50);
+  --card: var(--color-neutral-900);
+  --card-foreground: var(--color-neutral-50);
+  --popover: var(--color-neutral-900);
+  --popover-foreground: var(--color-neutral-50);
+  --primary: var(--color-primary-500);
+  --primary-foreground: var(--color-foreground-inverse);
+  --secondary: var(--color-secondary-500);
+  --secondary-foreground: var(--color-neutral-950);
+  --muted: var(--color-neutral-800);
+  --muted-foreground: var(--color-neutral-300);
+  --accent: var(--color-neutral-800);
+  --accent-foreground: var(--color-neutral-50);
+  --destructive: var(--color-error-500);
+  --border: var(--color-neutral-800);
+  --input: var(--color-neutral-800);
+  --ring: var(--color-primary-500);
+  --chart-1: var(--color-primary-400);
+  --chart-2: var(--color-secondary-500);
+  --chart-3: var(--color-neutral-300);
+  --chart-4: var(--color-success-500);
+  --chart-5: var(--color-error-500);
+  --sidebar: var(--color-neutral-900);
+  --sidebar-foreground: var(--color-neutral-50);
+  --sidebar-primary: var(--color-primary-500);
+  --sidebar-primary-foreground: var(--color-foreground-inverse);
+  --sidebar-accent: var(--color-neutral-800);
+  --sidebar-accent-foreground: var(--color-neutral-50);
+  --sidebar-border: var(--color-neutral-800);
+  --sidebar-ring: var(--color-primary-500);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
