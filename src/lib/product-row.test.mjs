@@ -24,12 +24,49 @@ test("maps product rows with SKU in column A and keeps SKU internal", () => {
     precio: 2500,
     visibilidad: true,
     imagen: "https://lh3.googleusercontent.com/d/image-id",
-    categoria: "Gaseosas",
+    categoria: "Sin alcohol",
+    subcategoria: "Gaseosas",
     cantidadMaxima: 6,
     descuentoTipo: "monto",
     descuento: 500,
     destacado: true,
   });
+});
+
+test("maps product rows by header and includes subcategory when present", () => {
+  const product = parseProductRow(
+    [
+      "SKU-002",
+      "Gin Heraclito",
+      "$18.500",
+      "si",
+      "",
+      "Destilados",
+      8,
+      "",
+      "",
+      "no",
+      "Gin",
+      "Gin",
+    ],
+    [
+      "SKU",
+      "Producto",
+      "Precio",
+      "Visibilidad",
+      "Imagen",
+      "Categoria",
+      "Stock",
+      "Tipo Descuento",
+      "Descuento",
+      "Destacado",
+      "Subcategoria",
+      "Categoria Original",
+    ],
+  );
+
+  assert.equal(product?.categoria, "Destilados");
+  assert.equal(product?.subcategoria, "Gin");
 });
 
 test("falls back to product name as internal id when SKU is blank", () => {
@@ -44,6 +81,8 @@ test("falls back to product name as internal id when SKU is blank", () => {
 
   assert.equal(product?.id, "Agua sin gas");
   assert.equal(product?.sku, "");
+  assert.equal(product?.categoria, "Sin alcohol");
+  assert.equal(product?.subcategoria, "Aguas");
 });
 
 test("uses a schema-versioned products cache key", () => {
@@ -52,5 +91,5 @@ test("uses a schema-versioned products cache key", () => {
     "utf8",
   );
 
-  assert.match(sheetsSource, /unstable_cache\(fetchProducts,\s*\["products-v2"\]/);
+  assert.match(sheetsSource, /unstable_cache\(fetchProducts,\s*\["products-v3"\]/);
 });

@@ -15,11 +15,13 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 | **Precio** | Precio en pesos (acepta `$`, `.` y `,`) | Si | `2500` o `$2.500` |
 | **Visibilidad** | `si` o `no` — si pones `no`, el producto no aparece en la pagina | Si | `si` |
 | **Imagen** | Link de la imagen (ver seccion "Imagenes") | No | `https://lh3.google...` |
-| **Categoria** | Categoria del producto | No | `Gaseosas` |
+| **Categoria** | Categoria principal del producto | No | `Sin alcohol` |
 | **Stock** | Cantidad maxima que un cliente puede pedir | No | `10` (si se deja vacio, se asume 10) |
 | **Tipo Descuento** | `porcentaje` o `monto` | No | `porcentaje` |
 | **Descuento** | Valor del descuento | No | `15` (= 15% OFF) o `500` (= -$500) |
 | **Destacado** | `si` o `no` — aparece en la seccion "Promociones" | No | `si` |
+| **Subcategoria** | Filtro secundario dentro de la categoria principal | No | `Gaseosas` |
+| **Categoria Original** | Auditoria de la categoria anterior | No | `Gaseosas` |
 
 ### Reglas importantes
 
@@ -27,7 +29,8 @@ Es la tabla principal. Cada fila es un producto. **Los datos arrancan en la fila
 - El **SKU** se usa internamente para identificar el producto en el carrito. Conviene que sea unico y que no cambie.
 - Si pones **Visibilidad** en `no`, el producto **no aparece** en la pagina.
 - Si pones **Stock** en `0`, el producto se muestra pero no se puede agregar al carrito (aparece como "Sin stock").
-- Los productos con **Destacado** en `si` o con **Descuento** mayor a 0 aparecen en el filtro "Promociones".
+- Los productos con **Destacado** en `si` o con **Descuento** mayor a 0 aparecen en el filtro "Promos".
+- La **Categoria** define el grupo principal de navegacion. La **Subcategoria** aparece como filtro secundario cuando corresponde.
 
 ### Descuentos
 
@@ -42,21 +45,23 @@ Si el descuento deja el precio en 0 o negativo, se ignora automaticamente.
 
 ## Pestana "Categorias"
 
-Define el **orden** en que aparecen las categorias en la pagina.
+Define el **orden** y las subcategorias que aparecen en la pagina.
 
-- Escribir un nombre de categoria por fila en la **columna A**.
-- El orden de las filas determina el orden en la pagina.
+- La columna **Categoria** contiene las categorias principales.
+- La columna **Subcategorias** contiene las opciones secundarias separadas por ` | `.
+- La columna **Notas** es informativa y no se muestra en la pagina.
+- El orden de las filas determina el orden de categorias en la pagina.
 - Si un producto tiene una categoria que no esta en esta lista, aparece al final.
-- Si una categoria de la lista no tiene productos, no se muestra.
+- Si una categoria o subcategoria de la lista no tiene productos, no se muestra.
+- **Promos no es una categoria:** sale automaticamente de productos destacados o con descuento.
 
 ### Ejemplo
 
-| A |
-|---|
-| Gaseosas |
-| Aguas |
-| Cervezas |
-| Vinos |
+| Categoria | Subcategorias | Notas |
+|-----------|----------------|-------|
+| Vinos y espumantes | Vinos \| Espumantes \| Champagne | Familia para vinos tranquilos, espumantes y champagne |
+| Destilados | Whisky \| Gin \| Vodka \| Ron | Bebidas espirituosas y licores |
+| Sin alcohol | Gaseosas \| Aguas \| Jugos | Bebidas sin alcohol |
 
 ---
 

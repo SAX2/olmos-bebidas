@@ -8,8 +8,15 @@ export interface Product {
   visibilidad: boolean;
   imagen: string;
   categoria: string;
+  subcategoria?: string;
   cantidadMaxima: number;
   descuento?: number;
   descuentoTipo?: DiscountType;
   destacado?: boolean;
+}
+
+export interface CategoryGroup {
+  category: string;
+  subcategories: string[];
+  note: string;
 }

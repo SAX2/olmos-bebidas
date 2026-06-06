@@ -2,18 +2,16 @@
 from __future__ import annotations
 
 import csv
-import sys
 from collections import Counter
 from pathlib import Path
 
-from openpyxl import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
 
-
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT = Path("/Users/santinodegra/Downloads/lista de precios-2.xlsx")
+ROOT = Path("/Users/santinodegra/Documents/VSCODE/olmos-bebidas")
+INPUT_PRODUCTS = Path("/Users/santinodegra/Downloads/lista de precios - Productos-3.csv")
+INPUT_CATEGORIES = Path("/Users/santinodegra/Downloads/lista de precios - Categorias.csv")
 OUTPUT_DIR = ROOT / "outputs" / "recategorizacion"
-OUTPUT_WORKBOOK = OUTPUT_DIR / "lista-de-precios-2-recategorizada.xlsx"
+OUTPUT_PRODUCTS = OUTPUT_DIR / "lista de precios - Productos-3-recategorizado.csv"
+OUTPUT_CATEGORIES = OUTPUT_DIR / "lista de precios - Categorias-recategorizadas.csv"
 OUTPUT_SUMMARY = OUTPUT_DIR / "resumen-recategorizacion.csv"
 OUTPUT_REVIEW = OUTPUT_DIR / "revisar-recategorizaciones.csv"
 
@@ -101,13 +99,11 @@ CATEGORY_STRUCTURE = [
 
 BASE_CATEGORY_MAP = {
     "Combos y Promociones": ("Combos", "Combos"),
-    "Combos": ("Combos", "Combos"),
     "Vinos": ("Vinos y espumantes", "Vinos"),
     "Espumantes": ("Vinos y espumantes", "Espumantes"),
     "Champagne": ("Vinos y espumantes", "Champagne"),
     "Cervezas": ("Cervezas", "Cervezas"),
     "Bebidas Alcohólicas Gasificadas": ("Cervezas", "Listas para tomar"),
-    "Listas para tomar": ("Cervezas", "Listas para tomar"),
     "Whisky": ("Destilados", "Whisky"),
     "Gin": ("Destilados", "Gin"),
     "Vodka": ("Destilados", "Vodka"),
@@ -124,11 +120,9 @@ BASE_CATEGORY_MAP = {
     "Pulpas": ("Aperitivos y coctelería", "Pulpas"),
     "Hielo": ("Aperitivos y coctelería", "Hielo"),
     "Copas y Utensilios": ("Aperitivos y coctelería", "Copas y utensilios"),
-    "Copas y utensilios": ("Aperitivos y coctelería", "Copas y utensilios"),
     "Gaseosas": ("Sin alcohol", "Gaseosas"),
     "Aguas": ("Sin alcohol", "Aguas"),
     "Agua Saborizada": ("Sin alcohol", "Agua saborizada"),
-    "Agua saborizada": ("Sin alcohol", "Agua saborizada"),
     "Jugos": ("Sin alcohol", "Jugos"),
     "Energizantes": ("Sin alcohol", "Energizantes"),
     "Sin alcohol": ("Sin alcohol", "Sin alcohol"),
@@ -136,15 +130,11 @@ BASE_CATEGORY_MAP = {
     "Alfajores": ("Snacks y almacén", "Alfajores"),
     "Chocolates": ("Snacks y almacén", "Chocolates"),
     "Chicles y Golosinas": ("Snacks y almacén", "Golosinas"),
-    "Golosinas": ("Snacks y almacén", "Golosinas"),
     "Conservas": ("Snacks y almacén", "Conservas"),
     "Mermeladas": ("Snacks y almacén", "Mermeladas"),
     "Aceite de Oliva": ("Snacks y almacén", "Aceite de oliva"),
-    "Aceite de oliva": ("Snacks y almacén", "Aceite de oliva"),
     "Estuchería y Regalos": ("Regalos y varios", "Estuchería y regalos"),
-    "Estuchería y regalos": ("Regalos y varios", "Estuchería y regalos"),
     "Artículos para Fumar": ("Regalos y varios", "Artículos para fumar"),
-    "Artículos para fumar": ("Regalos y varios", "Artículos para fumar"),
     "Preservativos": ("Regalos y varios", "Preservativos"),
     "Varios": ("Regalos y varios", "Varios"),
 }
@@ -163,174 +153,139 @@ KEYWORD_OVERRIDES = [
 
 PROTECTED_CATEGORY_OVERRIDES = {
     "Combos y Promociones",
-    "Combos",
     "Estuchería y Regalos",
     "Bebidas Alcohólicas Gasificadas",
 }
 
 
-def normalize(value: object) -> str:
-    return str(value or "").casefold().strip()
+def normalize(value: str) -> str:
+    return value.casefold().strip()
 
 
-def classify(product_name: object, original_category: object) -> tuple[str, str]:
-    category = str(original_category or "").strip()
-    if category in PROTECTED_CATEGORY_OVERRIDES:
-        return BASE_CATEGORY_MAP[category]
+def classify(row: dict[str, str]) -> tuple[str, str]:
+    original_category = row.get("Categoria", "").strip()
+    if original_category in PROTECTED_CATEGORY_OVERRIDES:
+        return BASE_CATEGORY_MAP[original_category]
 
-    name = normalize(product_name)
+    name = normalize(row.get("Producto", ""))
     for keyword, result in KEYWORD_OVERRIDES:
         if keyword in name:
             return result
 
-    return BASE_CATEGORY_MAP.get(category, ("Regalos y varios", "Varios"))
+    return BASE_CATEGORY_MAP.get(original_category, ("Regalos y varios", "Varios"))
 
 
-def write_csv(path: Path, rows: list[list[object]]) -> None:
+def read_csv(path: Path) -> list[list[str]]:
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return list(csv.reader(handle))
+
+
+def write_csv(path: Path, rows: list[list[str]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerows(rows)
 
 
-def header_lookup(sheet: Worksheet) -> dict[str, int]:
-    headers: dict[str, int] = {}
-    for cell in sheet[1]:
-        if cell.value is None:
-            continue
-        headers[str(cell.value).strip()] = cell.column
-    return headers
-
-
-def ensure_column(sheet: Worksheet, headers: dict[str, int], title: str, helper: str) -> int:
-    if title in headers:
-        return headers[title]
-
-    first_blank = None
-    for cell in sheet[1]:
-        if cell.value is None:
-            first_blank = cell.column
-            break
-
-    column = first_blank or sheet.max_column + 1
-    sheet.cell(row=1, column=column, value=title)
-    sheet.cell(row=2, column=column, value=helper)
-    headers[title] = column
-    return column
-
-
-def rewrite_categories_sheet(sheet: Worksheet) -> None:
-    max_row = max(sheet.max_row, len(CATEGORY_STRUCTURE) + 2)
-    for row in range(1, max_row + 1):
-        for column in range(1, 4):
-            sheet.cell(row=row, column=column, value=None)
-
-    sheet.cell(row=1, column=1, value="Categoria")
-    sheet.cell(row=1, column=2, value="Subcategorias")
-    sheet.cell(row=1, column=3, value="Notas")
-    sheet.cell(row=2, column=1, value="Categorias principales para la web")
-    sheet.cell(row=2, column=2, value="Subcategorias sugeridas separadas por |")
-    sheet.cell(row=2, column=3, value="Promos no es una categoria: sale de Destacado o Descuento.")
-
-    for row_index, item in enumerate(CATEGORY_STRUCTURE, start=3):
-        sheet.cell(row=row_index, column=1, value=item["category"])
-        sheet.cell(row=row_index, column=2, value=" | ".join(item["subcategories"]))
-        sheet.cell(row=row_index, column=3, value=item["note"])
-
-
-def recategorize_workbook(input_path: Path) -> None:
-    if not input_path.exists():
-        raise FileNotFoundError(f"No existe la planilla de entrada: {input_path}")
-
+def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    workbook = load_workbook(input_path)
-    products_sheet = workbook["Productos"]
-    categories_sheet = workbook["Categorias"]
 
-    headers = header_lookup(products_sheet)
-    required = ["SKU", "Producto", "Categoria"]
-    missing = [title for title in required if title not in headers]
-    if missing:
-        raise RuntimeError(f"Faltan columnas obligatorias en Productos: {', '.join(missing)}")
+    category_rows = read_csv(INPUT_CATEGORIES)
+    product_rows = read_csv(INPUT_PRODUCTS)
+    if len(product_rows) < 2:
+        raise RuntimeError("La planilla de productos no tiene las dos filas de encabezado esperadas.")
 
-    subcategory_col = ensure_column(
-        products_sheet,
-        headers,
-        "Subcategoria",
-        "Subcategoria dentro de la categoria principal",
-    )
-    original_col = ensure_column(
-        products_sheet,
-        headers,
-        "Categoria Original",
-        "Categoria anterior antes de la reorganizacion",
-    )
+    header = product_rows[0]
+    helper = product_rows[1]
+    category_index = header.index("Categoria")
 
-    sku_col = headers["SKU"]
-    product_col = headers["Producto"]
-    category_col = headers["Categoria"]
-
-    summary: Counter[tuple[str, str]] = Counter()
-    original_summary: Counter[str] = Counter()
-    review_rows: list[list[object]] = [
-        ["SKU", "Producto", "Categoria Original", "Categoria Nueva", "Subcategoria"]
+    output_product_rows: list[list[str]] = [
+        header + ["Subcategoria", "Categoria Original"],
+        helper + [
+            "Subcategoria dentro de la categoria principal",
+            "Categoria anterior antes de la reorganizacion",
+        ],
     ]
+
+    summary = Counter()
+    original_summary = Counter()
+    review_rows = [["SKU", "Producto", "Categoria Original", "Categoria Nueva", "Subcategoria"]]
     product_count = 0
 
-    for row in range(3, products_sheet.max_row + 1):
-        product_name = products_sheet.cell(row=row, column=product_col).value
-        if not str(product_name or "").strip():
+    for source in product_rows[2:]:
+        row = list(source)
+        if len(row) < len(header):
+            row += [""] * (len(header) - len(row))
+
+        row_dict = dict(zip(header, row))
+        if not row_dict.get("Producto", "").strip():
+            output_product_rows.append(row + ["", row[category_index].strip()])
             continue
 
         product_count += 1
-        sku = products_sheet.cell(row=row, column=sku_col).value
-        original_category = str(products_sheet.cell(row=row, column=category_col).value or "").strip()
-        category, subcategory = classify(product_name, original_category)
+        original_category = row[category_index].strip()
+        category, subcategory = classify(row_dict)
+        if original_category and BASE_CATEGORY_MAP.get(original_category) != (category, subcategory):
+            review_rows.append([
+                row_dict.get("SKU", ""),
+                row_dict.get("Producto", ""),
+                original_category,
+                category,
+                subcategory,
+            ])
 
-        products_sheet.cell(row=row, column=category_col, value=category)
-        products_sheet.cell(row=row, column=subcategory_col, value=subcategory)
-        products_sheet.cell(row=row, column=original_col, value=original_category)
-
+        row[category_index] = category
+        output_product_rows.append(row + [subcategory, original_category])
         summary[(category, subcategory)] += 1
         original_summary[original_category] += 1
 
-        if original_category and BASE_CATEGORY_MAP.get(original_category) != (category, subcategory):
-            review_rows.append([sku or "", product_name, original_category, category, subcategory])
-
-    rewrite_categories_sheet(categories_sheet)
-    workbook.save(OUTPUT_WORKBOOK)
-
-    summary_rows: list[list[object]] = [["Categoria nueva", "Subcategoria", "Cantidad de productos"]]
-    for (category, subcategory), count in sorted(summary.items()):
-        summary_rows.append([category, subcategory, count])
-
-    summary_rows.extend([[], ["Categoria original", "Cantidad de productos"]])
-    for category, count in sorted(original_summary.items()):
-        summary_rows.append([category, count])
-
-    summary_rows.extend(
+    category_output_rows = [
+        ["Categorias", "Subcategorias", "Notas"],
         [
-            [],
-            ["Productos con recategorizacion por palabra clave", len(review_rows) - 1],
-            ["Productos con nombre procesados", product_count],
-            ["Workbook fuente", str(input_path)],
-            ["Workbook generado", str(OUTPUT_WORKBOOK)],
-        ]
-    )
+            "← Categorias principales para la web",
+            "Subcategorias sugeridas para filtros de segundo nivel",
+            "Promos no es una categoria: sale de Destacado o Descuento.",
+        ],
+    ]
+    for item in CATEGORY_STRUCTURE:
+        category_output_rows.append([
+            item["category"],
+            " | ".join(item["subcategories"]),
+            item["note"],
+        ])
 
+    summary_rows = [
+        ["Categoria nueva", "Subcategoria", "Cantidad de productos"],
+    ]
+    for (category, subcategory), count in sorted(summary.items()):
+        summary_rows.append([category, subcategory, str(count)])
+
+    summary_rows.extend([
+        [],
+        ["Categoria original", "Cantidad de productos"],
+    ])
+    for category, count in sorted(original_summary.items()):
+        summary_rows.append([category, str(count)])
+
+    summary_rows.extend([
+        [],
+        ["Productos con recategorizacion por palabra clave", str(len(review_rows) - 1)],
+        ["Filas de categorias fuente", str(len(category_rows))],
+        ["Productos con nombre procesados", str(product_count)],
+        ["Filas de productos fuente", str(len(product_rows))],
+    ])
+
+    write_csv(OUTPUT_PRODUCTS, output_product_rows)
+    write_csv(OUTPUT_CATEGORIES, category_output_rows)
     write_csv(OUTPUT_SUMMARY, summary_rows)
     write_csv(OUTPUT_REVIEW, review_rows)
 
-    print(f"Workbook: {OUTPUT_WORKBOOK}")
+    print(f"Productos: {OUTPUT_PRODUCTS}")
+    print(f"Categorias: {OUTPUT_CATEGORIES}")
     print(f"Resumen: {OUTPUT_SUMMARY}")
     print(f"Revision: {OUTPUT_REVIEW}")
     print(f"Productos procesados: {product_count}")
     print(f"Categorias nuevas: {len(CATEGORY_STRUCTURE)}")
     print(f"Recategorizaciones por palabra clave: {len(review_rows) - 1}")
-
-
-def main() -> None:
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_INPUT
-    recategorize_workbook(input_path)
 
 
 if __name__ == "__main__":
