@@ -1,62 +1,214 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback, useEffect, startTransition } from "react";
+import {
+  startTransition,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import ProductCard from "@/components/product/product-card";
 import ProductList from "@/components/product/product-list";
+import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { useCart } from "@/components/cart/cart-context";
-import type { Product } from "@/types/product";
+import {
+  ALL_FILTER,
+  COMBOS_FILTER,
+  PROMOS_FILTER,
+  filterProducts,
+} from "@/lib/catalog-filter";
+import type { CategoryGroup, Product } from "@/types/product";
 
-function normalize(text: string): string {
-  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-const ALL_CATEGORY = "Todos";
-const PROMOS_CATEGORY = "Promociones";
 const PAGE_SIZE = 12;
 
 interface ProductCatalogProps {
   products: Product[];
-  categories: string[];
+  categoryGroups: CategoryGroup[];
 }
 
-export default function ProductCatalog({ products, categories }: ProductCatalogProps) {
-  const { addItem, removeItem, getQuantity } = useCart();
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORY);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const scrollRef = useRef<HTMLElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(false);
+interface FilterChipProps {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}
 
-  const handleCategoryChange = useCallback((category: string) => {
-    setSelectedCategory(category);
-    setSearchQuery("");
+function FilterChip({ label, selected, onSelect }: FilterChipProps) {
+  return (
+    <Button
+      type="button"
+      variant={selected ? "default" : "outline"}
+      size="sm"
+      aria-pressed={selected}
+      onClick={onSelect}
+      className="h-auto min-h-10 max-w-full justify-start whitespace-normal rounded-md px-3 py-2 text-left text-body-sm leading-tight"
+    >
+      {label}
+    </Button>
+  );
+}
+
+interface FilterGroupProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function FilterGroup({ title, children }: FilterGroupProps) {
+  return (
+    <section className="flex flex-col gap-3" aria-label={title}>
+      <h2 className="text-body-sm font-semibold text-foreground-secondary">
+        {title}
+      </h2>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </section>
+  );
+}
+
+interface CatalogFiltersProps {
+  categoryGroups: CategoryGroup[];
+  selectedFeature: string;
+  selectedCategory: string;
+  selectedSubcategory: string;
+  onFeatureSelect: (feature: string) => void;
+  onCategorySelect: (category: string) => void;
+  onSubcategorySelect: (subcategory: string) => void;
+}
+
+function CatalogFilters({
+  categoryGroups,
+  selectedFeature,
+  selectedCategory,
+  selectedSubcategory,
+  onFeatureSelect,
+  onCategorySelect,
+  onSubcategorySelect,
+}: CatalogFiltersProps) {
+  const mainCategoryGroups = categoryGroups.filter(
+    (group) => group.category !== COMBOS_FILTER,
+  );
+  const selectedGroup = categoryGroups.find(
+    (group) => group.category === selectedCategory,
+  );
+  const subcategoryOptions = selectedGroup?.subcategories ?? [];
+
+  return (
+    <div className="flex flex-col gap-7">
+      <FilterGroup title="Destacados">
+        {[PROMOS_FILTER, COMBOS_FILTER].map((feature) => (
+          <FilterChip
+            key={feature}
+            label={feature}
+            selected={selectedFeature === feature}
+            onSelect={() => onFeatureSelect(feature)}
+          />
+        ))}
+      </FilterGroup>
+
+      <FilterGroup title="Categorias">
+        {mainCategoryGroups.map((group) => (
+          <FilterChip
+            key={group.category}
+            label={group.category}
+            selected={selectedCategory === group.category}
+            onSelect={() => onCategorySelect(group.category)}
+          />
+        ))}
+      </FilterGroup>
+
+      {selectedCategory !== ALL_FILTER && subcategoryOptions.length > 0 ? (
+        <FilterGroup title="Subcategorias">
+          {[ALL_FILTER, ...subcategoryOptions].map((subcategory) => (
+            <FilterChip
+              key={subcategory}
+              label={subcategory}
+              selected={selectedSubcategory === subcategory}
+              onSelect={() => onSubcategorySelect(subcategory)}
+            />
+          ))}
+        </FilterGroup>
+      ) : null}
+    </div>
+  );
+}
+
+export default function ProductCatalog({
+  products,
+  categoryGroups,
+}: ProductCatalogProps) {
+  const { addItem, removeItem, getQuantity } = useCart();
+  const [selectedFeature, setSelectedFeature] = useState(ALL_FILTER);
+  const [selectedCategory, setSelectedCategory] = useState(ALL_FILTER);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(ALL_FILTER);
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const resetVisibleCount = useCallback(() => {
     setVisibleCount(PAGE_SIZE);
   }, []);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchQuery(value);
+  const handleFeatureSelect = useCallback((feature: string) => {
     startTransition(() => {
-      setSelectedCategory(ALL_CATEGORY);
+      setSelectedFeature((current) =>
+        current === feature ? ALL_FILTER : feature,
+      );
+      setSelectedCategory(ALL_FILTER);
+      setSelectedSubcategory(ALL_FILTER);
       setVisibleCount(PAGE_SIZE);
     });
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    const query = normalize(searchQuery.trim());
-    if (query) {
-      return products.filter((p) => normalize(p.nombre).includes(query));
-    }
-    if (selectedCategory === ALL_CATEGORY) return products;
-    if (selectedCategory === PROMOS_CATEGORY) {
-      return products.filter(
-        (p) => p.destacado || (p.descuento && p.descuento > 0),
+  const handleCategorySelect = useCallback((category: string) => {
+    startTransition(() => {
+      setSelectedFeature(ALL_FILTER);
+      setSelectedCategory((current) =>
+        current === category ? ALL_FILTER : category,
       );
-    }
-    return products.filter((p) => p.categoria === selectedCategory);
-  }, [products, selectedCategory, searchQuery]);
+      setSelectedSubcategory(ALL_FILTER);
+      setVisibleCount(PAGE_SIZE);
+    });
+  }, []);
+
+  const handleSubcategorySelect = useCallback((subcategory: string) => {
+    startTransition(() => {
+      setSelectedSubcategory(subcategory);
+      setVisibleCount(PAGE_SIZE);
+    });
+  }, []);
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      startTransition(resetVisibleCount);
+    },
+    [resetVisibleCount],
+  );
+
+  const filteredProducts = useMemo(
+    () =>
+      filterProducts(products, {
+        searchQuery: deferredSearchQuery,
+        selectedFeature,
+        selectedCategory,
+        selectedSubcategory,
+      }),
+    [
+      products,
+      deferredSearchQuery,
+      selectedFeature,
+      selectedCategory,
+      selectedSubcategory,
+    ],
+  );
 
   const visibleProducts = useMemo(
     () => filteredProducts.slice(0, visibleCount),
@@ -82,120 +234,74 @@ export default function ProductCatalog({ products, categories }: ProductCatalogP
     return () => observer.disconnect();
   }, [filteredProducts.length]);
 
-  const updateFades = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setShowLeftFade(el.scrollLeft > 0);
-    setShowRightFade(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-  }, []);
-
-  useEffect(() => {
-    updateFades();
-    const observer = new ResizeObserver(updateFades);
-    if (scrollRef.current) observer.observe(scrollRef.current);
-    return () => observer.disconnect();
-  }, [updateFades, categories]);
+  const filterProps = {
+    categoryGroups,
+    selectedFeature,
+    selectedCategory,
+    selectedSubcategory,
+    onFeatureSelect: handleFeatureSelect,
+    onCategorySelect: handleCategorySelect,
+    onSubcategorySelect: handleSubcategorySelect,
+  };
 
   return (
-    <>
-      <div className="relative mb-4">
-        <IconSearch
-          size={20}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground-tertiary pointer-events-none"
-          aria-hidden="true"
-        />
-        <input
-          type="search"
-          value={searchQuery}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Buscar productos..."
-          className="w-full rounded-full bg-neutral-100 py-2.5 pl-10 pr-10 text-body-base text-foreground-primary placeholder:text-foreground-tertiary outline-none transition-colors duration-150 focus:bg-surface-background focus:ring-2 focus:ring-primary-500 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => handleSearchChange("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-neutral-300 text-foreground-secondary hover:bg-neutral-400 transition-all duration-150 ease-out animate-[search-clear-in_150ms_ease-out]"
-            aria-label="Limpiar búsqueda"
-          >
-            <IconX size={14} strokeWidth={2.5} />
-          </button>
-        )}
-      </div>
+    <div className="grid gap-7 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+      <aside className="hidden lg:sticky lg:top-5 lg:flex lg:flex-col lg:gap-8 lg:px-2 lg:py-5">
+        <CatalogFilters {...filterProps} />
+      </aside>
 
-      <div className="relative">
-        <nav
-          ref={scrollRef}
-          onScroll={updateFades}
-          aria-label="Filtrar por categoría"
-          className="flex gap-2 overflow-x-auto pb-4 scrollbar-none"
-        >
-          {[ALL_CATEGORY, PROMOS_CATEGORY, ...categories].map((category) => {
-            const isPromo = category === PROMOS_CATEGORY;
-            const isSelected = selectedCategory === category;
-
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => handleCategoryChange(category)}
-                className={`shrink-0 px-4 py-2.5 border rounded-full text-label will-change-transform transition-all duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none${
-                  isSelected
-                    ? isPromo
-                      ? " border-primary-500 bg-primary-500 text-foreground-inverse shadow-md shadow-primary-500/25"
-                      : " border-transparent bg-primary-500 text-foreground-inverse shadow-sm"
-                    : isPromo
-                      ? " border-dashed border-primary-300 text-primary-600 bg-primary-50 hover:bg-primary-100"
-                      : " border-transparent bg-neutral-100 text-foreground-secondary hover:bg-neutral-200"
-                }`}
+      <section className="flex min-w-0 flex-col gap-6">
+        <InputGroup className="h-12 rounded-md border-border bg-surface-card">
+          <InputGroupAddon align="inline-start">
+            <IconSearch aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            type="search"
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Buscar entre productos..."
+            aria-label="Buscar productos"
+            className="text-body-base [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+          />
+          {searchQuery ? (
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                aria-label="Limpiar búsqueda"
+                onClick={() => handleSearchChange("")}
               >
-                {isPromo && (
-                  <span className="inline-block mr-1" aria-hidden="true">
-                    %
-                  </span>
-                )}
-                {category}
-              </button>
-            );
-          })}
-        </nav>
+                <IconX aria-hidden="true" />
+              </InputGroupButton>
+            </InputGroupAddon>
+          ) : null}
+        </InputGroup>
 
-        <div
-          className={`pointer-events-none absolute left-0 top-0 bottom-4 w-16 bg-linear-to-r from-surface-background to-transparent transition-opacity duration-200${
-            showLeftFade ? " opacity-100" : " opacity-0"
-          }`}
-          aria-hidden="true"
-        />
-        <div
-          className={`pointer-events-none absolute right-0 top-0 bottom-4 w-16 bg-linear-to-l from-surface-background to-transparent transition-opacity duration-200${
-            showRightFade ? " opacity-100" : " opacity-0"
-          }`}
-          aria-hidden="true"
-        />
-      </div>
+        <div className="lg:hidden">
+          <CatalogFilters {...filterProps} />
+        </div>
 
-      {filteredProducts.length === 0 ? (
-        <p className="py-12 text-center text-body-base text-foreground-tertiary">
-          No se encontraron productos
-        </p>
-      ) : (
-        <ProductList>
-          {visibleProducts.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              quantity={getQuantity(product.id)}
-              onAdd={() => addItem(product.id, product.cantidadMaxima)}
-              onRemove={() => removeItem(product.id)}
-              priority={index < 8}
-            />
-          ))}
-        </ProductList>
-      )}
+        {filteredProducts.length === 0 ? (
+          <p className="py-12 text-center text-body-base text-foreground-tertiary">
+            No se encontraron productos
+          </p>
+        ) : (
+          <ProductList>
+            {visibleProducts.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                quantity={getQuantity(product.id)}
+                onAdd={() => addItem(product.id, product.cantidadMaxima)}
+                onRemove={() => removeItem(product.id)}
+                priority={index < 8}
+              />
+            ))}
+          </ProductList>
+        )}
 
-      {visibleCount < filteredProducts.length && (
-        <div ref={sentinelRef} className="h-1" aria-hidden="true" />
-      )}
-    </>
+        {visibleCount < filteredProducts.length && (
+          <div ref={sentinelRef} className="h-1" aria-hidden="true" />
+        )}
+      </section>
+    </div>
   );
 }

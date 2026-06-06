@@ -44,16 +44,16 @@ export default function CartBar({ products }: CartBarProps) {
   if (totalItems === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-surface-card border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] animate-cart-bar-enter motion-reduce:animate-none">
-      <div className="container mx-auto px-6 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface-card shadow-[0_-1px_4px_rgba(0,0,0,0.08)] animate-cart-bar-enter motion-reduce:animate-none">
+      <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-5 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-4">
           {previewProducts.length > 0 ? (
-            <div className="hidden md:flex items-center pl-3">
+            <div className="hidden items-center pl-3 md:flex">
               <div className="flex items-center -space-x-3">
                 {previewProducts.map((product, i) => (
                   <div
                     key={product.id}
-                    className={`relative w-12 h-12 rounded-lg border-2 border-white bg-white shadow-md overflow-hidden ${ROTATIONS[i]} will-change-[transform,opacity] animate-thumb-pop-in motion-reduce:animate-none`}
+                    className={`relative size-14 overflow-hidden rounded-md border-2 border-white bg-white shadow-sm ${ROTATIONS[i]} animate-thumb-pop-in will-change-[transform,opacity] motion-reduce:animate-none`}
                     style={{ zIndex: MAX_PREVIEW - i, animationDelay: `${i * 50}ms` }}
                   >
                     <Image
@@ -61,7 +61,7 @@ export default function CartBar({ products }: CartBarProps) {
                       alt={product.nombre}
                       fill
                       className="object-contain"
-                      sizes="48px"
+                      sizes="56px"
                     />
                   </div>
                 ))}
@@ -69,7 +69,7 @@ export default function CartBar({ products }: CartBarProps) {
             </div>
           ) : null}
 
-          <div className="flex flex-col">
+          <div className="flex min-w-0 flex-col">
             <span className="text-label font-semibold text-foreground">
               {totalItems} {totalItems === 1 ? "producto" : "productos"}
             </span>
@@ -81,7 +81,7 @@ export default function CartBar({ products }: CartBarProps) {
 
         <Link
           href="/carrito"
-          className="flex-1 md:flex-initial text-center bg-primary-500 text-foreground-inverse px-6 py-2.5 rounded-md text-label font-semibold hover:bg-primary-600 active:bg-primary-700 transition-colors duration-150"
+          className="flex-1 rounded-md bg-primary-500 px-7 py-3 text-center text-label font-semibold text-foreground-inverse transition-colors duration-150 hover:bg-primary-600 active:bg-primary-700 md:flex-initial"
         >
           Ver pedido
         </Link>

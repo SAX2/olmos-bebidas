@@ -30,8 +30,8 @@ const ProductCard = memo(function ProductCard({
 
   return (
     <article
-      className={`cv-auto flex flex-col bg-surface-card border border-border shadow-sm transition-shadow duration-200 overflow-hidden${
-        isOutOfStock ? " opacity-50" : " hover:shadow-md"
+      className={`cv-auto flex flex-col bg-surface-card border border-border shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-shadow duration-200 overflow-hidden${
+        isOutOfStock ? " opacity-50" : " hover:shadow-sm"
       }`}
     >
       <div className="relative aspect-square bg-white">
@@ -69,8 +69,8 @@ const ProductCard = memo(function ProductCard({
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
-        <div className="min-h-12.5 pt-4">
+      <div className="flex flex-1 flex-col gap-3 px-5 pb-5">
+        <div className="min-h-14 pt-5">
           <h2 className="text-heading-sm font-semibold text-foreground line-clamp-2">
             {product.nombre}
           </h2>
@@ -78,7 +78,9 @@ const ProductCard = memo(function ProductCard({
 
         {product.categoria ? (
           <p className="text-body-sm text-foreground-secondary">
-            {product.categoria}
+            {product.subcategoria
+              ? `${product.categoria} / ${product.subcategoria}`
+              : product.categoria}
           </p>
         ) : null}
 
@@ -93,7 +95,7 @@ const ProductCard = memo(function ProductCard({
           </span>
         </div>
 
-        <div className="mt-auto relative h-10">
+        <div className="mt-auto relative h-11">
           <button
             type="button"
             disabled={isOutOfStock}
@@ -125,7 +127,7 @@ const ProductCard = memo(function ProductCard({
               type="button"
               onClick={onRemove}
               tabIndex={quantity === 0 ? -1 : undefined}
-              className="flex items-center justify-center w-10 h-full text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9] will-change-transform transition-[transform,background-color] duration-100 ease-out motion-reduce:transition-none text-lg font-semibold"
+              className="flex h-full w-11 items-center justify-center text-lg font-semibold text-primary-500 transition-[transform,background-color] duration-100 ease-out will-change-transform hover:bg-primary-500/10 active:scale-[0.9] active:bg-primary-500/20 motion-reduce:transition-none"
             >
               <IconMinus size={18} />
             </button>
@@ -137,7 +139,7 @@ const ProductCard = memo(function ProductCard({
               onClick={onAdd}
               disabled={atMax}
               tabIndex={quantity === 0 ? -1 : undefined}
-              className={`flex items-center justify-center w-10 h-full will-change-transform transition-[transform,background-color] duration-100 ease-out motion-reduce:transition-none text-lg font-semibold${
+              className={`flex h-full w-11 items-center justify-center text-lg font-semibold transition-[transform,background-color] duration-100 ease-out will-change-transform motion-reduce:transition-none${
                 atMax
                   ? " text-neutral-400 cursor-not-allowed"
                   : " text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9]"

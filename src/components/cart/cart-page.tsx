@@ -54,7 +54,7 @@ export default function CartPage({ products }: CartPageProps) {
 
   if (totalItems === 0) {
     return (
-      <div className="container mx-auto px-6 pt-8 pb-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 pb-10 pt-10 sm:px-6 lg:px-8">
         <header className="flex items-center gap-3 mb-8">
           <Link
             href="/"
@@ -72,7 +72,7 @@ export default function CartPage({ products }: CartPageProps) {
           </p>
           <Link
             href="/"
-            className="bg-primary-500 text-foreground-inverse px-6 py-2.5 rounded-md text-label font-semibold hover:bg-primary-600 active:bg-primary-700 transition-colors duration-150"
+            className="rounded-md bg-primary-500 px-7 py-3 text-label font-semibold text-foreground-inverse transition-colors duration-150 hover:bg-primary-600 active:bg-primary-700"
           >
             Volver al catalogo
           </Link>
@@ -82,7 +82,7 @@ export default function CartPage({ products }: CartPageProps) {
   }
 
   return (
-    <div className="container mx-auto px-6 pt-8 pb-8 flex-1 flex flex-col">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-4 pb-10 pt-10 sm:px-6 lg:px-8">
       <header className="flex items-center justify-between mb-8">
         <Link
           href="/"
@@ -94,7 +94,7 @@ export default function CartPage({ products }: CartPageProps) {
         <h1 className="text-heading-md text-foreground">Carrito</h1>
       </header>
 
-      <div className="grid md:grid-cols-[1fr_380px] gap-8 items-start">
+      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(420px,460px)]">
         <div className="min-w-0 mb-36 md:mb-0">
           <ul className="divide-y divide-border">
             {cartItems.map(({ product, quantity }) => {
@@ -104,17 +104,17 @@ export default function CartPage({ products }: CartPageProps) {
               return (
                 <li
                   key={product.id}
-                  className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4 py-4 first:pt-0 last:pb-0"
+                  className="flex flex-col gap-3 py-5 first:pt-0 last:pb-0 md:flex-row md:items-center md:gap-5"
                 >
-                  <div className="flex items-center gap-3 min-w-0 md:flex-1">
-                    <div className="relative w-12 h-12 shrink-0 rounded-md bg-neutral-100 border border-black/5 overflow-hidden">
+                  <div className="flex min-w-0 items-center gap-4 md:flex-1">
+                    <div className="relative size-14 shrink-0 overflow-hidden rounded-md border border-black/5 bg-neutral-100">
                       {product.imagen ? (
                         <Image
                           src={product.imagen}
                           alt={product.nombre}
                           fill
                           className="object-contain"
-                          sizes="48px"
+                          sizes="56px"
                         />
                       ) : (
                         <ImagePlaceholder size={24} />
@@ -131,15 +131,15 @@ export default function CartPage({ products }: CartPageProps) {
                     <p className="text-price text-foreground-price tabular-nums shrink-0 hidden md:block">
                       {formatPrice(unitPrice * quantity)}
                     </p>
-                    <div className="inline-flex items-center h-10 rounded-md border border-primary-500 bg-surface-card overflow-hidden">
+                    <div className="inline-flex h-11 items-center overflow-hidden rounded-md border border-primary-500 bg-surface-card">
                       <button
                         type="button"
                         onClick={() => removeItem(product.id)}
-                        className="flex items-center justify-center w-10 h-full text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9] will-change-transform transition-[transform,background-color] duration-100"
+                        className="flex h-full w-11 items-center justify-center text-primary-500 transition-[transform,background-color] duration-100 will-change-transform hover:bg-primary-500/10 active:scale-[0.9] active:bg-primary-500/20"
                       >
                         <IconMinus size={18} />
                       </button>
-                      <span className="w-10 text-center text-label font-semibold text-foreground tabular-nums">
+                      <span className="w-11 text-center text-label font-semibold text-foreground tabular-nums">
                         {quantity}
                       </span>
                       <button
@@ -148,7 +148,7 @@ export default function CartPage({ products }: CartPageProps) {
                           addItem(product.id, product.cantidadMaxima)
                         }
                         disabled={atMax}
-                        className={`flex items-center justify-center w-10 h-full will-change-transform transition-[transform,background-color] duration-100${
+                        className={`flex h-full w-11 items-center justify-center transition-[transform,background-color] duration-100 will-change-transform${
                           atMax
                             ? " text-neutral-400 cursor-not-allowed"
                             : " text-primary-500 hover:bg-primary-500/10 active:bg-primary-500/20 active:scale-[0.9]"
@@ -160,7 +160,7 @@ export default function CartPage({ products }: CartPageProps) {
                     <button
                       type="button"
                       onClick={() => deleteItem(product.id)}
-                      className="flex items-center justify-center gap-1.5 shrink-0 rounded-md text-foreground-secondary hover:text-error-500 hover:bg-error-500/10 transition-colors duration-150 h-10 px-2 md:w-10 md:px-0"
+                      className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-md px-2 text-foreground-secondary transition-colors duration-150 hover:bg-error-500/10 hover:text-error-500 md:w-11 md:px-0"
                       aria-label={`Eliminar ${product.nombre}`}
                     >
                       <IconTrash
@@ -177,7 +177,7 @@ export default function CartPage({ products }: CartPageProps) {
           </ul>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface-card px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,0.08)] md:sticky md:bottom-auto md:left-auto md:right-auto md:z-auto md:top-8 md:rounded-lg md:border md:border-border md:shadow-sm md:p-6">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface-card px-4 py-4 shadow-[0_-1px_4px_rgba(0,0,0,0.08)] sm:px-6 md:sticky md:bottom-auto md:left-auto md:right-auto md:z-auto md:top-8 md:rounded-md md:border md:border-border md:p-7 md:shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <span className="text-body-lg text-foreground-secondary">
               Subtotal
@@ -189,7 +189,7 @@ export default function CartPage({ products }: CartPageProps) {
           <button
             type="button"
             onClick={handleSendOrder}
-            className="w-full flex items-center justify-center gap-2 bg-success-500 text-foreground-inverse py-3 rounded-md text-label font-semibold hover:bg-success-600 active:bg-success-700 transition-colors duration-150"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-success-500 py-3.5 text-label font-semibold text-foreground-inverse transition-colors duration-150 hover:bg-success-600 active:bg-success-700"
           >
             <IconBrandWhatsapp size={20} aria-hidden="true" />
             Enviar pedido

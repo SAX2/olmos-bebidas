@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { google } from "googleapis";
-import type { Product } from "@/types/product";
+import type { CategoryGroup, Product } from "@/types/product";
+import { DEFAULT_CATEGORY_GROUPS, parseCategoryGroups } from "@/lib/category-groups";
 import { parseProductRow } from "@/lib/product-row";
 
 const auth = new google.auth.JWT({
@@ -26,9 +27,11 @@ async function fetchProducts(): Promise<Product[]> {
     const rows = response.data.values;
     if (!rows || rows.length <= 2) return [];
 
+    const headers = rows[0] ?? [];
+
     return rows
       .slice(2)
-      .map((row) => parseProductRow(row))
+      .map((row) => parseProductRow(row, headers))
       .filter((product): product is Product => product !== null);
   } catch (error) {
     console.error("Error fetching products from Google Sheets:", error);
@@ -36,7 +39,7 @@ async function fetchProducts(): Promise<Product[]> {
   }
 }
 
-export const getProducts = unstable_cache(fetchProducts, ["products-v2"], {
+export const getProducts = unstable_cache(fetchProducts, ["products-v3"], {
   revalidate: 300,
 });
 
@@ -64,28 +67,29 @@ export const getPromoDestacada = unstable_cache(fetchPromoDestacada, ["promo-des
   revalidate: 300,
 });
 
-async function fetchCategories(): Promise<string[]> {
+async function fetchCategoryGroups(): Promise<CategoryGroup[]> {
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-    return [];
+    return DEFAULT_CATEGORY_GROUPS;
   }
 
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Categorias!A:A",
+      range: "Categorias!A:C",
       valueRenderOption: "UNFORMATTED_VALUE",
     });
 
     const rows = response.data.values;
     if (!rows) return [];
 
-    return rows.map((row) => String(row[0] ?? "")).filter(Boolean);
+    const categoryGroups = parseCategoryGroups(rows);
+    return categoryGroups.length > 0 ? categoryGroups : DEFAULT_CATEGORY_GROUPS;
   } catch (error) {
     console.error("Error fetching categories from Google Sheets:", error);
-    return [];
+    return DEFAULT_CATEGORY_GROUPS;
   }
 }
 
-export const getCategories = unstable_cache(fetchCategories, ["categories"], {
+export const getCategoryGroups = unstable_cache(fetchCategoryGroups, ["category-groups-v2"], {
   revalidate: 300,
 });
