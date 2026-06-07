@@ -9,7 +9,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import {
+  IconAdjustmentsHorizontal,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import ProductCard from "@/components/product/product-card";
 import ProductList from "@/components/product/product-list";
 import { Button } from "@/components/ui/button";
@@ -19,6 +23,16 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useCart } from "@/components/cart/cart-context";
 import {
   ALL_FILTER,
@@ -49,7 +63,7 @@ function FilterChip({ label, selected, onSelect }: FilterChipProps) {
       size="sm"
       aria-pressed={selected}
       onClick={onSelect}
-      className="h-auto min-h-10 max-w-full justify-start whitespace-normal rounded-md px-3 py-2 text-left text-body-sm leading-tight"
+      className="h-auto min-h-10 max-w-full justify-start whitespace-normal rounded-md px-3 py-2 text-left text-sm font-normal leading-tight tracking-normal"
     >
       {label}
     </Button>
@@ -251,32 +265,65 @@ export default function ProductCatalog({
       </aside>
 
       <section className="flex min-w-0 flex-col gap-6">
-        <InputGroup className="h-12 rounded-md border-border bg-surface-card">
-          <InputGroupAddon align="inline-start">
-            <IconSearch aria-hidden="true" />
-          </InputGroupAddon>
-          <InputGroupInput
-            type="search"
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Buscar entre productos..."
-            aria-label="Buscar productos"
-            className="text-body-base [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
-          />
-          {searchQuery ? (
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton
-                aria-label="Limpiar búsqueda"
-                onClick={() => handleSearchChange("")}
-              >
-                <IconX aria-hidden="true" />
-              </InputGroupButton>
+        <div className="flex gap-2">
+          <InputGroup className="h-12 rounded-md border-border bg-surface-card">
+            <InputGroupAddon align="inline-start">
+              <IconSearch aria-hidden="true" />
             </InputGroupAddon>
-          ) : null}
-        </InputGroup>
+            <InputGroupInput
+              type="search"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Buscar entre productos..."
+              aria-label="Buscar productos"
+              className="text-body-base [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+            />
+            {searchQuery ? (
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  aria-label="Limpiar búsqueda"
+                  onClick={() => handleSearchChange("")}
+                >
+                  <IconX aria-hidden="true" />
+                </InputGroupButton>
+              </InputGroupAddon>
+            ) : null}
+          </InputGroup>
 
-        <div className="lg:hidden">
-          <CatalogFilters {...filterProps} />
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="h-12 lg:hidden"
+              >
+                <IconAdjustmentsHorizontal data-icon="inline-start" />
+                Filtros
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              className="data-[side=right]:w-[88vw]"
+            >
+              <SheetHeader>
+                <SheetTitle>Filtros</SheetTitle>
+                <SheetDescription>
+                  Elegí las categorías que querés ver en el catálogo.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2">
+                <CatalogFilters {...filterProps} />
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button type="button" size="lg" className="w-full">
+                    Ver {filteredProducts.length} productos
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {filteredProducts.length === 0 ? (
