@@ -2,6 +2,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Para configurar Google OAuth, Cloudinary Free y el portal `/admin`, ver [Portal de imágenes](PORTAL-IMAGENES.md). Las variables necesarias están en `.env.example`.
+
 First, run the development server:
 
 ```bash
