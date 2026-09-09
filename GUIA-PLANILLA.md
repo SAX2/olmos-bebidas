@@ -84,6 +84,16 @@ Muestra un **texto de aviso** que se desplaza en la parte superior de la pagina 
 
 ## Imagenes con Google Drive
 
+### Portal para subir fotos
+
+Cuando el portal esté configurado, entrá a `/admin` en el sitio e ingresá con tu cuenta de Google autorizada. Buscá el producto y elegí **Subir imagen** o **Reemplazar imagen**. Podés seleccionar un archivo, pegar la dirección pública de una imagen o usar la cámara compatible de tu dispositivo.
+
+El portal guarda el enlace automáticamente en la columna Imagen. Acepta JPG, PNG o WebP de hasta 5 MB. Si aparece **Reintentar guardado**, usá ese botón sin volver a subir la foto. Los SKU vacíos o repetidos deben corregirse primero en la planilla. Las imágenes guardadas desde el portal aparecen al recargar el catálogo, sin esperar los cinco minutos de los cambios manuales.
+
+La configuración inicial y los límites del plan gratuito están en [Portal de imágenes](PORTAL-IMAGENES.md).
+
+### Alternativa manual con Drive
+
 Para agregar imagenes de los productos, podes usar Google Drive que ya tenes con tu cuenta de Google.
 
 ### Paso a paso

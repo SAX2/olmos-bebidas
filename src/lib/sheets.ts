@@ -41,6 +41,7 @@ async function fetchProducts(): Promise<Product[]> {
 
 export const getProducts = unstable_cache(fetchProducts, ["products-v3"], {
   revalidate: 300,
+  tags: ["products"],
 });
 
 async function fetchPromoDestacada(): Promise<string | null> {
